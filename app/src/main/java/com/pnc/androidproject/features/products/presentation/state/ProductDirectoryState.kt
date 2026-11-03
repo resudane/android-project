@@ -8,6 +8,9 @@ data class ProductDirectoryState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 ) {
+    val displayedProducts: List<Product>
+        get() = products
+
     val chosenProduct: Product?
         get() = products.find { it.productId == chosenProductId }
 }

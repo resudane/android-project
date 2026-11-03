@@ -1,5 +1,6 @@
 package com.pnc.androidproject.features.products.data.local
 
+import com.pnc.androidproject.features.products.data.ProductDto
 import com.pnc.androidproject.features.products.domain.Product
 
 object ProductEntityMapper {
@@ -18,7 +19,7 @@ object ProductEntityMapper {
         )
     }
 
-    fun mapToEntity(domain: Product): ProductEntity {
+    fun mapToEntity(domain: ProductDto): ProductEntity {
         return ProductEntity(
             productId = domain.productId,
             name = domain.name,
