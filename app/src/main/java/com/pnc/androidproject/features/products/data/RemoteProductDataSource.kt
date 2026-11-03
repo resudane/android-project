@@ -3,7 +3,7 @@ package com.pnc.androidproject.features.products.data
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface RemoteArtistDataSource: ProductDataSource {
+interface RemoteProductDataSource: ProductDataSource {
     @GET("Product")
     override suspend fun getProducts(): List<ProductDto>
 

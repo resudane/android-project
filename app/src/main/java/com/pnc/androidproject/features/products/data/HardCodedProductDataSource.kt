@@ -9,7 +9,7 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
         return listOf(
             ProductDto(
                 productId = 1,
-                name = "Product 1",
+                name = "Product Temp",
                 productNumber = "12345",
                 summary = "Product 1 summary",
                 thumbnailPhoto = "https://example.com/product1.jpg",
