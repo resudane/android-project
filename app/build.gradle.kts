@@ -61,4 +61,7 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.bundles.retrofit)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.bundles.okhttp)
+    implementation(libs.bundles.coil)
 }
