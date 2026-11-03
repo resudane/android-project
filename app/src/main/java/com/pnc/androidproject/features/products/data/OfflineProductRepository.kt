@@ -12,12 +12,19 @@ import javax.inject.Singleton
 @Singleton
 class OfflineProductRepository @Inject constructor(
     private val productDao: ProductDao,
-    private val remote: ProductDataSource
+    private val remote: ProductDataSource,
+    private val fallbackSource: HardCodedProductDataSource
 ): ProductRepository {
     override fun observeProducts(): Flow<List<Product>> =
         productDao.observeProducts().map { list ->
-            list.map{ entity ->
-                ProductEntityMapper.mapToDomain(entity)
+            if (list.isEmpty()) {
+                fallbackSource.getProducts().map {
+                    ProductEntityMapper.mapToDomain(ProductEntityMapper.mapToEntity(it))
+                }
+            } else {
+                list.map { entity ->
+                    ProductEntityMapper.mapToDomain(entity)
+                }
             }
         }
 
@@ -27,14 +34,24 @@ class OfflineProductRepository @Inject constructor(
         }
 
     override suspend fun refreshProducts() {
-        val entities = remote.getProducts().map {
+        val dtos = try {
+            remote.getProducts()
+        } catch (e: Exception) {
+            fallbackSource.getProducts()
+        }
+        val entities = dtos.map {
             ProductEntityMapper.mapToEntity(it)
         }
         productDao.replaceAll(entities)
     }
 
     override suspend fun refreshProduct(id: Int) {
-        val entity = ProductEntityMapper.mapToEntity(remote.getProduct(id))
+        val dto = try {
+            remote.getProduct(id)
+        } catch (e: Exception) {
+            fallbackSource.getProduct(id)
+        }
+        val entity = ProductEntityMapper.mapToEntity(dto)
         productDao.upsertProduct(listOf(entity))
     }
 }
