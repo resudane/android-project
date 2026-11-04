@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.pnc.androidproject.features.orders.prsentation.composables.OrdersList
 import com.pnc.androidproject.features.products.presentation.ProductListScreen
 import com.pnc.androidproject.features.products.presentation.composables.ProductDetails
 import kotlinx.coroutines.launch
@@ -23,7 +25,8 @@ data class DrawerItem(val label: String, val route: String)
 
 val drawerItems = listOf(
     DrawerItem("Home", "home"),
-    DrawerItem("Products", "products")
+    DrawerItem("Products", "products"),
+    DrawerItem("Orders", "orders")
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +82,6 @@ fun AppNavigation() {
                     onProductSelected = { productId ->
                         navController.navigate("product/$productId")
                     }
-
                 ) }
                 composable("products") {
                     ProductListScreen(
@@ -94,6 +96,11 @@ fun AppNavigation() {
                 ) { backStackEntry ->
                     val productId = backStackEntry.arguments?.getInt("productId") ?: 0
                     ProductDetails(productId = productId)
+                }
+                composable("orders") {
+                    OrdersList(
+                        viewModel = hiltViewModel()
+                    )
                 }
             }
         }
