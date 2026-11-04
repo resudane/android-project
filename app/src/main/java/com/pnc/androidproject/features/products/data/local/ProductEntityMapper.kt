@@ -7,15 +7,15 @@ object ProductEntityMapper {
     fun mapToDomain(entity: ProductEntity): Product {
         return Product(
             productId = entity.productId,
-            name = entity.name,
-            productNumber = entity.productNumber,
-            summary = entity.summary,
-            thumbnailPhoto = entity.thumbnailPhoto,
-            thumbnailPhotoFileName = entity.thumbnailPhotoFileName,
-            warranty = entity.warranty,
-            color = entity.color,
-            listPrice = entity.listPrice,
-            quantity = entity.quantity
+            name = entity.name ?: "",
+            productNumber = entity.productNumber ?: "",
+            summary = entity.summary ?: "",
+            thumbnailPhoto = entity.thumbnailPhoto ?: "",
+            thumbnailPhotoFileName = entity.thumbnailPhotoFileName ?: "",
+            warranty = entity.warranty ?: "",
+            color = entity.color ?: "" ,
+            listPrice = entity.listPrice ?: 0.0,
+            quantity = entity.quantity ?: 0
         )
     }
 

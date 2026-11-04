@@ -58,8 +58,8 @@ fun ProductDetails(
                     product.productNumber,
                     color = Color.Gray
                 )
-                Text(product.color)
-                Text(product.warranty)
+                Text(product.color ?: "")
+                Text(product.warranty ?: "")
 //                Text(product.listPrice)
 //                AsyncImage(
 //                    model = "https://kazoopromotions.com${artist.imageUrl}",

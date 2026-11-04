@@ -1,5 +1,6 @@
 package com.pnc.androidproject.features.products.data
 
+import android.util.Log
 import com.pnc.androidproject.features.products.data.local.ProductDao
 import com.pnc.androidproject.features.products.data.local.ProductEntityMapper
 import com.pnc.androidproject.features.products.domain.Product
