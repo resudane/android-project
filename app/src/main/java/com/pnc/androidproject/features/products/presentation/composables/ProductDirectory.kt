@@ -93,7 +93,11 @@ fun ProductDirectory(
                 Box(modifier = Modifier.weight(1f)) {
                     ProductList(
                         products = state.displayedProducts,
+                        showFavoritesOnly = state.showFavoritesOnly, // Pull from state
+                        favoriteIds = state.favoriteIds,             // Pull from state
                         onProductSelected = onProductSelected,
+                        onToggleFavorite = { id, isFav -> /* Forward to viewmodel/parent listener here */ },
+                        onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                         innerPadding = PaddingValues(0.dp)
                     )
                 }
@@ -121,7 +125,11 @@ fun ProductDirectory(
         } else {
             ProductList(
                 products = state.displayedProducts,
+                showFavoritesOnly = state.showFavoritesOnly,
+                favoriteIds = state.favoriteIds,
                 onProductSelected = onProductSelected,
+                onToggleFavorite = { id, isFav -> /* Forward to viewmodel/parent listener here */ },
+                onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                 innerPadding = innerPadding
             )
         }

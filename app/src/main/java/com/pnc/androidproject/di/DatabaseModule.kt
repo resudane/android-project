@@ -3,6 +3,7 @@ package com.pnc.androidproject.di
 import android.content.Context
 import androidx.room.Room
 import com.pnc.androidproject.core.AppDatabase
+import com.pnc.androidproject.features.products.data.local.FavoriteDao
 import com.pnc.androidproject.features.products.data.local.ProductDao
 import dagger.Module
 import dagger.Provides
@@ -32,4 +33,11 @@ object DatabaseModule {
     fun provideProductDao(database: AppDatabase): ProductDao {
         return database.productDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteDao(database: AppDatabase): FavoriteDao {
+        return database.favoriteDao()
+    }
+
 }

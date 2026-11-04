@@ -22,8 +22,16 @@ fun ProductListScreen(
     }
 
     ProductList(
-        products = uiState.products,
+        products = uiState.displayedProducts,
+        showFavoritesOnly = uiState.showFavoritesOnly,
+        favoriteIds = uiState.favoriteIds,
         onProductSelected = onProductSelected,
+        onToggleFavorite = { productId, isFav ->
+            viewModel.toggleFavorite(productId, isFav)
+        },
+        onSetShowFavoritesOnly = { showFavs ->
+            viewModel.setShowFavoritesOnly(showFavs)
+        },
         innerPadding = PaddingValues(0.dp)
     )
 }
