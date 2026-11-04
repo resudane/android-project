@@ -7,14 +7,18 @@ import androidx.compose.foundation.layout.Column // Added for vertical arrangeme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,7 +76,7 @@ fun ProductList(
             .padding(innerPadding)
     ) {
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
             Row(
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -94,26 +98,33 @@ fun ProductList(
                     TextButton(onClick = onClearHistory) { Text("Clear") }
                 }
             }
-
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize()
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                )
             ) {
-                items(
-                    items = displayedProducts,
-                    key = { it.productId }
-                ) { product ->
-                    ProductCard(
-                        product = product,
-                        isFavorite = product.productId in favoriteIds, // Checking standard property
-                        onFavoriteChange = { isFav ->
-                            onToggleFavorite(
-                                product.productId,
-                                isFav
-                            )
-                        },
-                        onClick = { onProductSelected(product.productId) }
-                    )
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize().padding(8.dp)
+                ) {
+                    items(
+                        items = displayedProducts,
+                        key = { it.productId }
+                    ) { product ->
+                        ProductCard(
+                            product = product,
+                            isFavorite = product.productId in favoriteIds, // Checking standard property
+                            onFavoriteChange = { isFav ->
+                                onToggleFavorite(
+                                    product.productId,
+                                    isFav
+                                )
+                            },
+                            onClick = { onProductSelected(product.productId) }
+                        )
+                    }
                 }
             }
         }

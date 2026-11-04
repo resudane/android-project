@@ -75,7 +75,12 @@ fun AppNavigation() {
                 startDestination = "home",
                 modifier = Modifier.padding(padding)
             ) {
-                composable("home") { HomeScreen() }
+                composable("home") { HomeScreen(
+                    onProductSelected = { productId ->
+                        navController.navigate("product/$productId")
+                    }
+
+                ) }
                 composable("products") {
                     ProductListScreen(
                         onProductSelected = { productId ->
