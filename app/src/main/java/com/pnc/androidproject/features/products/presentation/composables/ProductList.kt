@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column // Added for vertical arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState // Added for state observation
 import androidx.compose.runtime.derivedStateOf
@@ -37,10 +39,14 @@ import kotlinx.coroutines.launch
 fun ProductList(
     products: List<Product>,
     showFavoritesOnly: Boolean,
+    showHistoryOnly: Boolean,
     favoriteIds: Set<Int>,
+    recentIds: List<Int>,
     onProductSelected: (Int) -> Unit,
     onToggleFavorite: (productId: Int, Boolean) -> Unit,
     onSetShowFavoritesOnly: (Boolean) -> Unit,
+    onSetShowHistoryOnly: (Boolean) -> Unit,
+    onClearHistory: () -> Unit,
     innerPadding: PaddingValues
 ) {
     val listState = rememberLazyListState()
@@ -52,6 +58,14 @@ fun ProductList(
         }
     }
 
+    val displayedProducts = remember(products, showHistoryOnly, showFavoritesOnly, recentIds, favoriteIds) {
+        when {
+            showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
+            showFavoritesOnly -> products.filter { it.productId in favoriteIds }
+            else -> products
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -59,19 +73,34 @@ fun ProductList(
     ) {
 
         Column(modifier = Modifier.fillMaxSize()) {
-            FilterChip(
-                selected = showFavoritesOnly,
-                onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
-                label = { Text("Favorites") },
-                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
-            )
+            Row(
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    selected = showFavoritesOnly,
+                    onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
+                    label = { Text("Saved") },
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                )
+                FilterChip(
+                    selected = showHistoryOnly,
+                    onClick = { onSetShowHistoryOnly(!showHistoryOnly) },
+                    label = { Text("History") },
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                )
+                if (showHistoryOnly && recentIds.isNotEmpty()) {
+                    TextButton(onClick = onClearHistory) { Text("Clear") }
+                }
+            }
 
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
-                    items = products,
+                    items = displayedProducts,
                     key = { it.productId }
                 ) { product ->
                     ProductCard(

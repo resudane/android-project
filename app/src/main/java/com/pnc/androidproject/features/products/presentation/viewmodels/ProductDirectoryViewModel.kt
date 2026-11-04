@@ -1,9 +1,11 @@
 package com.pnc.androidproject.features.products.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.androidproject.features.products.data.FavoritesRepository
+import com.pnc.androidproject.features.products.data.RecentlyViewedRepository
 import com.pnc.androidproject.features.products.domain.GetAvailableProductsUseCase
 import com.pnc.androidproject.features.products.domain.RefreshProductsUseCase
 import com.pnc.androidproject.features.products.presentation.state.ProductDirectoryState
@@ -21,6 +23,7 @@ class ProductDirectoryViewModel @Inject constructor(
     private val getAvailableProducts: GetAvailableProductsUseCase,
     private val refreshProducts: RefreshProductsUseCase,
     private val favoritesRepository: FavoritesRepository,
+    private val recentRepository: RecentlyViewedRepository,
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 ): ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -40,6 +43,12 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update { it.copy(favoriteIds = ids) }
             }
         }
+        viewModelScope.launch {
+            recentRepository.observeRecentIds().collect { ids ->
+                Log.d("RECENT", "Recent IDs from Room: $ids")
+                _uiState.update { it.copy(recentIds = ids) }
+            }
+        }
     }
 
     fun toggleFavorite(productId: Int, favorite: Boolean) {
@@ -50,6 +59,14 @@ class ProductDirectoryViewModel @Inject constructor(
 
     fun setShowFavoritesOnly(show: Boolean) {
         _uiState.update { it.copy(showFavoritesOnly = show) }
+    }
+
+    fun setShowHistoryOnly(show: Boolean) {
+        _uiState.update { it.copy(showHistoryOnly = show, showFavoritesOnly = false) }
+    }
+
+    fun clearHistory() {
+        viewModelScope.launch { recentRepository.clearHistory() }
     }
 
     fun loadProducts() {

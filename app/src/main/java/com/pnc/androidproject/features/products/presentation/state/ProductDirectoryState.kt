@@ -8,7 +8,9 @@ data class ProductDirectoryState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val favoriteIds: Set<Int> = emptySet(),
-    val showFavoritesOnly: Boolean = false
+    val showFavoritesOnly: Boolean = false,
+    val recentIds: List<Int> = emptyList(),
+    val showHistoryOnly: Boolean = false
 ) {
     val displayedProducts: List<Product>
         get() = if (showFavoritesOnly) products.filter { it.productId in favoriteIds }
@@ -18,6 +20,12 @@ data class ProductDirectoryState(
         get() = products.find { it.productId == chosenProductId }
 
     val visibleProducts: List<Product>
-        get() = if (showFavoritesOnly) products.filter { it.productId in favoriteIds }
-        else products
+        get() = when {
+            showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
+            showFavoritesOnly -> products.filter { it.productId in favoriteIds }
+            else -> products
+        }
+
+    val recentProducts: List<Product>
+        get() = recentIds.mapNotNull { id -> products.find { it.productId == id } }
 }

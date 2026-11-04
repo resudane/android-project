@@ -5,6 +5,7 @@ import com.pnc.androidproject.features.products.domain.Product
 import com.pnc.androidproject.features.products.domain.RefreshProductUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pnc.androidproject.features.products.data.RecentlyViewedRepository
 import com.pnc.androidproject.features.products.domain.GetProductUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
     private val getProduct: GetProductUseCase,
-    private val refreshProduct: RefreshProductUseCase
+    private val refreshProduct: RefreshProductUseCase,
+    private val recentlyViewedRepository: RecentlyViewedRepository
 ): ViewModel() {
     private val _uiState: MutableStateFlow<LoadableState<Product>> = MutableStateFlow(
         LoadableState.Loading
@@ -39,6 +41,7 @@ class ProductDetailsViewModel @Inject constructor(
         loadJob = viewModelScope.launch {
             _uiState.value = LoadableState.Loading
             val hadCache = getProduct(id).first() != null
+            var recorded = false
 
             launch {
                 try {
@@ -57,7 +60,13 @@ class ProductDetailsViewModel @Inject constructor(
 
             getProduct(id).collect { product ->
                 when {
-                    product != null -> _uiState.value = LoadableState.Success(product)
+                    product != null -> {
+                        _uiState.value = LoadableState.Success(product)
+                        if (!recorded) {                           // new
+                            recorded = true
+                            recentlyViewedRepository.recordView(product.productId)
+                        }
+                    }
                     hadCache -> _uiState.value = LoadableState.Empty
                 }
             }

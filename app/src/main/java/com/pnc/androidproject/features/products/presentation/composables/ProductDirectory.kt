@@ -44,7 +44,8 @@ fun ProductDirectory(
     useTwoPaneLayout: Boolean,
     onBack: () -> Unit = {},
     onProductSelected: (Int) -> Unit = {},
-    onShowFilterChange: (Boolean) -> Unit = {}
+    onShowFilterChange: (Boolean) -> Unit = {},
+    onClearHistory: () -> Unit = {}
 //    useTwoPaneLayout: Boolean = false
 ) {
     Scaffold(
@@ -93,11 +94,15 @@ fun ProductDirectory(
                 Box(modifier = Modifier.weight(1f)) {
                     ProductList(
                         products = state.displayedProducts,
-                        showFavoritesOnly = state.showFavoritesOnly, // Pull from state
-                        favoriteIds = state.favoriteIds,             // Pull from state
+                        showFavoritesOnly = state.showFavoritesOnly,
+                        showHistoryOnly = state.showHistoryOnly,
+                        favoriteIds = state.favoriteIds,
+                        recentIds = state.recentIds,
                         onProductSelected = onProductSelected,
-                        onToggleFavorite = { id, isFav -> /* Forward to viewmodel/parent listener here */ },
+                        onToggleFavorite = { id, isFav -> },
                         onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
+                        onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
+                        onClearHistory = { onClearHistory() },
                         innerPadding = PaddingValues(0.dp)
                     )
                 }
@@ -126,10 +131,14 @@ fun ProductDirectory(
             ProductList(
                 products = state.displayedProducts,
                 showFavoritesOnly = state.showFavoritesOnly,
+                showHistoryOnly = state.showHistoryOnly,
                 favoriteIds = state.favoriteIds,
+                recentIds = state.recentIds,
                 onProductSelected = onProductSelected,
-                onToggleFavorite = { id, isFav -> /* Forward to viewmodel/parent listener here */ },
+                onToggleFavorite = { id, isFav -> },
                 onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
+                onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
+                onClearHistory = { onClearHistory() },
                 innerPadding = innerPadding
             )
         }

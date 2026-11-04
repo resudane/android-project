@@ -24,7 +24,9 @@ fun ProductListScreen(
     ProductList(
         products = uiState.displayedProducts,
         showFavoritesOnly = uiState.showFavoritesOnly,
+        showHistoryOnly = uiState.showHistoryOnly,
         favoriteIds = uiState.favoriteIds,
+        recentIds = uiState.recentIds,
         onProductSelected = onProductSelected,
         onToggleFavorite = { productId, isFav ->
             viewModel.toggleFavorite(productId, isFav)
@@ -32,6 +34,10 @@ fun ProductListScreen(
         onSetShowFavoritesOnly = { showFavs ->
             viewModel.setShowFavoritesOnly(showFavs)
         },
+        onSetShowHistoryOnly = { showHistory ->
+            viewModel.setShowHistoryOnly(showHistory)
+        },
+        onClearHistory = viewModel::clearHistory,
         innerPadding = PaddingValues(0.dp)
     )
 }
