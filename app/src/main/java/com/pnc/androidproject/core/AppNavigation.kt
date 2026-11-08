@@ -17,13 +17,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.pnc.androidproject.features.products.presentation.ProductListScreen
 import com.pnc.androidproject.features.products.presentation.composables.ProductDetails
+import com.pnc.androidproject.features.orders.presentation.OrderHistoryScreen
 import kotlinx.coroutines.launch
 
 data class DrawerItem(val label: String, val route: String)
 
 val drawerItems = listOf(
     DrawerItem("Home", "home"),
-    DrawerItem("Products", "products")
+    DrawerItem("Products", "products"),
+    DrawerItem("Orders", "orders")
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +89,9 @@ fun AppNavigation() {
                             navController.navigate("product/$productId")
                         }
                     )
+                }
+                composable("orders") {
+                    OrderHistoryScreen()
                 }
                 composable(
                     route = "product/{productId}",
