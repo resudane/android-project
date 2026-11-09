@@ -84,32 +84,6 @@ fun ProductDetails(
                         product.productNumber,
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Text(
-                        text = "$${product.listPrice}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = "Quantity: ${product.quantity}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    if (!product.summary.isNullOrBlank()) {
-                        Text(
-                            product.summary,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    if (!product.color.isNullOrBlank()) {
-                        Text(
-                            text = "Color: ${product.color}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    if (!product.warranty.isNullOrBlank()) {
-                        Text(
-                            text = "Warranty: ${product.warranty}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
 
                     val photo = remember(product.thumbnailPhoto) {
                         product.thumbnailPhoto?.let { photoConverter(it) }
@@ -128,6 +102,37 @@ fun ProductDetails(
                                 .height(110.dp)
                                 .width(175.dp)
 //                                .clip(imageShape)
+                        )
+                    }
+                    Text(
+                        text = "$${product.listPrice}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                    Text(
+                        text = "Quantity:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                    if (!product.summary.isNullOrBlank()) {
+                        Text(
+                            product.summary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                    }
+                    if (!product.color.isNullOrBlank()) {
+                        Text(
+                            text = "Color: ${product.color}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                    }
+                    if (!product.warranty.isNullOrBlank()) {
+                        Text(
+                            text = "Warranty: ${product.warranty}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.align(Alignment.Start)
                         )
                     }
                 }

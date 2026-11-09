@@ -14,8 +14,7 @@ object ProductEntityMapper {
             thumbnailPhotoFileName = entity.thumbnailPhotoFileName ?: "",
             warranty = entity.warranty ?: "",
             color = entity.color ?: "" ,
-            listPrice = entity.listPrice ?: 0.0,
-            quantity = entity.quantity ?: 0
+            listPrice = entity.listPrice ?: 0.0
         )
     }
 
@@ -29,8 +28,7 @@ object ProductEntityMapper {
             thumbnailPhotoFileName = domain.thumbnailPhotoFileName,
             warranty = domain.warranty,
             color = domain.color,
-            listPrice = domain.listPrice,
-            quantity = domain.quantity
+            listPrice = domain.listPrice
         )
     }
 }

@@ -9,6 +9,5 @@ data class Product(
     val thumbnailPhotoFileName: String?,
     val warranty: String?,
     val color: String?,
-    val listPrice: Double,
-    val quantity: Int
+    val listPrice: Double
 )
