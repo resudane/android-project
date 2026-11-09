@@ -3,7 +3,7 @@ package com.pnc.androidproject.features.products.presentation.composables
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column // Added for vertical arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,25 +24,22 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState // Added for state observation
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pnc.androidproject.features.products.domain.Product
-import com.pnc.androidproject.features.products.presentation.composables.ProductCard
-import com.pnc.androidproject.features.products.presentation.viewmodels.ProductDirectoryViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProductList(
     products: List<Product>,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
+    onRetry: () -> Unit = {},
     showFavoritesOnly: Boolean,
     showHistoryOnly: Boolean,
     favoriteIds: Set<Int>,
@@ -84,6 +82,31 @@ fun ProductList(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (errorMessage != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = onRetry) {
+                            Text("Retry", color = MaterialTheme.colorScheme.onErrorContainer)
+                        }
+                    }
+                }
+            }
             Row(
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -106,30 +129,40 @@ fun ProductList(
                 }
             }
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize().padding(8.dp)
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    items(
-                        items = displayedProducts,
-                        key = { it.productId }
-                    ) { product ->
-                        ProductCard(
-                            product = product,
-                            isFavorite = product.productId in favoriteIds, // Checking standard property
-                            onFavoriteChange = { isFav ->
-                                onToggleFavorite(
-                                    product.productId,
-                                    isFav
-                                )
-                            },
-                            onClick = { onProductSelected(product.productId) }
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().padding(8.dp)
+                    ) {
+                        items(
+                            items = displayedProducts,
+                            key = { it.productId }
+                        ) { product ->
+                            ProductCard(
+                                product = product,
+                                isFavorite = product.productId in favoriteIds,
+                                onFavoriteChange = { isFav ->
+                                    onToggleFavorite(
+                                        product.productId,
+                                        isFav
+                                    )
+                                },
+                                onClick = { onProductSelected(product.productId) }
+                            )
+                        }
+                    }
+
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
                 }
@@ -139,7 +172,7 @@ fun ProductList(
         AnimatedVisibility(
             visible = showScrollToTop,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
+                .align(Alignment.TopEnd)
                 .padding(16.dp)
         ) {
             SmallFloatingActionButton(

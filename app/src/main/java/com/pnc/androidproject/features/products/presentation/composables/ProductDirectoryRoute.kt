@@ -32,6 +32,7 @@ fun ProductDirectoryRoute(
                 onProductSelected(it)
             }
         },
+        onRetry = { viewModel.loadProducts() },
 //        onGenreChange = {
 //            viewModel.updateGenreFilter(it)
 //        },
