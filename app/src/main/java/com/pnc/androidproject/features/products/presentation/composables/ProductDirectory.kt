@@ -45,8 +45,8 @@ fun ProductDirectory(
     onBack: () -> Unit = {},
     onProductSelected: (Int) -> Unit = {},
     onShowFilterChange: (Boolean) -> Unit = {},
-    onClearHistory: () -> Unit = {}
-//    useTwoPaneLayout: Boolean = false
+    onClearHistory: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -94,6 +94,9 @@ fun ProductDirectory(
                 Box(modifier = Modifier.weight(1f)) {
                     ProductList(
                         products = state.displayedProducts,
+                        isLoading = state.isLoading,
+                        errorMessage = state.errorMessage,
+                        onRetry = onRetry,
                         showFavoritesOnly = state.showFavoritesOnly,
                         showHistoryOnly = state.showHistoryOnly,
                         favoriteIds = state.favoriteIds,
@@ -130,6 +133,9 @@ fun ProductDirectory(
         } else {
             ProductList(
                 products = state.displayedProducts,
+                isLoading = state.isLoading,
+                errorMessage = state.errorMessage,
+                onRetry = onRetry,
                 showFavoritesOnly = state.showFavoritesOnly,
                 showHistoryOnly = state.showHistoryOnly,
                 favoriteIds = state.favoriteIds,
@@ -142,57 +148,5 @@ fun ProductDirectory(
                 innerPadding = innerPadding
             )
         }
-
-
-//        if (state.showFilter) {
-//            ModalBottomSheet(
-//                onDismissRequest = {
-//                    onShowFilterChange(false)
-//                }
-//            ) {
-//                Column(
-//                    modifier = Modifier.padding(16.dp),
-//                    verticalArrangement = Arrangement.spacedBy(12.dp)
-//                ) {
-//                    Text(
-//                        text = stringResource(R.string.artists_filter_title),
-//                        style = MaterialTheme.typography.titleSmall
-//                    )
-//                    TextFilter(
-//                        label = stringResource(R.string.artists_genre_label),
-//                        filter = state.genreFilter,
-//                        onFilterChange = onGenreChange
-//                    )
-//                    TextFilter(
-//                        label = stringResource(R.string.artists_location_label),
-//                        filter = state.locationFilter,
-//                        onFilterChange = onLocationChange
-//                    )
-//                    Row(
-//                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//                    ) {
-//                        Button(
-//                            onClick = {
-//                                onGenreChange("")
-//                                onLocationChange("")
-//                            },
-//                            colors = ButtonDefaults.buttonColors(
-//                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-//                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-//                            )
-//                        ) {
-//                            Text(stringResource(R.string.common_clear))
-//                        }
-//                        Button(
-//                            onClick = {
-//                                onShowFilterChange(false)
-//                            }
-//                        ) {
-//                            Text(stringResource(R.string.common_close))
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 }

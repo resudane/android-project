@@ -23,6 +23,9 @@ fun ProductListScreen(
 
     ProductList(
         products = uiState.displayedProducts,
+        isLoading = uiState.isLoading,
+        errorMessage = uiState.errorMessage,
+        onRetry = { viewModel.loadProducts() },
         showFavoritesOnly = uiState.showFavoritesOnly,
         showHistoryOnly = uiState.showHistoryOnly,
         favoriteIds = uiState.favoriteIds,
