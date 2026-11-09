@@ -30,12 +30,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnc.androidproject.core.LoadableState
 import com.pnc.androidproject.features.products.domain.Product
 import com.pnc.androidproject.features.products.presentation.viewmodels.ProductDetailsViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ProductDetails(
@@ -70,7 +73,8 @@ fun ProductDetails(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color.LightGray)
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
+                        .height(500.dp)
                         .padding(10.dp)
                 ) {
                     val displayName = product.name.ifBlank {
@@ -78,46 +82,23 @@ fun ProductDetails(
                     }
                     Text(
                         displayName,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         product.productNumber,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Text(
-                        text = "$${product.listPrice}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = "Quantity: ${product.quantity}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    if (!product.summary.isNullOrBlank()) {
-                        Text(
-                            product.summary,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    if (!product.color.isNullOrBlank()) {
-                        Text(
-                            text = "Color: ${product.color}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    if (!product.warranty.isNullOrBlank()) {
-                        Text(
-                            text = "Warranty: ${product.warranty}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                    val hasRealPhoto = product.thumbnailPhotoFileName
+                        ?.contains("no_image_available", ignoreCase = true) != true
 
-                    val photo = remember(product.thumbnailPhoto) {
-                        product.thumbnailPhoto?.let { photoConverter(it) }
+                    val photo = remember(product.thumbnailPhoto, hasRealPhoto) {
+                        if (hasRealPhoto) product.thumbnailPhoto?.let { photoConverter(it) } else null
                     }
 
                     photo?.let {
                         val imageShape = RoundedCornerShape(10.dp)
-
                         Image(
                             bitmap = it,
                             contentDescription = product.name,
@@ -127,7 +108,47 @@ fun ProductDetails(
                                 .padding(6.dp)
                                 .height(110.dp)
                                 .width(175.dp)
-//                                .clip(imageShape)
+                        )
+                    }
+                    Text(
+                        text = NumberFormat.getCurrencyInstance(Locale.US)
+                            .format(product.listPrice),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(top = 8.dp, bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Quantity: ${product.quantity}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(bottom = 8.dp)
+                    )
+                    if (!product.summary.isNullOrBlank()) {
+                        Text(
+                            product.summary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(bottom = 8.dp)
+                        )
+                    }
+                    if (!product.color.isNullOrBlank()) {
+                        Text(
+                            text = "Color: ${product.color}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(bottom = 8.dp)
+                        )
+                    }
+                    if (!product.warranty.isNullOrBlank()) {
+                        Text(
+                            text = "Warranty: ${product.warranty}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.align(Alignment.Start)
                         )
                     }
                 }

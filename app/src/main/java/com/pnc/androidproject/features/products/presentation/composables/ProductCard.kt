@@ -24,9 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pnc.androidproject.features.products.domain.Product
 import com.pnc.androidproject.R
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ProductCard(
@@ -77,10 +80,29 @@ fun ProductCard(
             val displayName = product.name.ifBlank {
                 product.productNumber.ifBlank { "Product #${product.productId}" }
             }
-            Text(
-                text = displayName,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Text(
+                        text = NumberFormat.getCurrencyInstance(Locale.US)
+                            .format(product.listPrice),
+                        style = MaterialTheme.typography.titleSmall,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
         }
     }
 }

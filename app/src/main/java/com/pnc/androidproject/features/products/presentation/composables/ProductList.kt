@@ -85,7 +85,7 @@ fun ProductList(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+                modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -93,7 +93,7 @@ fun ProductList(
                     selected = showFavoritesOnly,
                     onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
                     label = { Text("Saved") },
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                 )
                 FilterChip(
                     selected = showHistoryOnly,
@@ -139,7 +139,7 @@ fun ProductList(
         AnimatedVisibility(
             visible = showScrollToTop,
             modifier = Modifier
-                .align(Alignment.BottomStart)
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
             SmallFloatingActionButton(
