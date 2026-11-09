@@ -89,24 +89,12 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Couldn't reload artists"
+                        errorMessage = e.message ?: "Couldn't reload products"
                     )
                 }
             }
         }
     }
-
-    fun dismissError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-//    fun updateShowFilter(show: Boolean) {
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                showFilter = show
-//            )
-//        }
-//    }
 
     fun setSelectedProduct(productId: Int) {
         _uiState.update { currentState ->

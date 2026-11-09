@@ -17,19 +17,4 @@ object ProductMapper {
             quantity = dto.quantity ?: 0
         )
     }
-
-    fun mapToDto(domain: Product): ProductDto {
-        return ProductDto(
-            productId = domain.productId,
-            name = domain.name ?: "",
-            productNumber = domain.productNumber ?: "",
-            summary = domain.summary ?: "",
-            thumbnailPhoto = domain.thumbnailPhoto ?: "",
-            thumbnailPhotoFileName = domain.thumbnailPhotoFileName ?: "",
-            warranty = domain.warranty ?: "",
-            color = domain.color ?: "",
-            listPrice = domain.listPrice ?: 0.0,
-            quantity = domain.quantity ?: 0
-        )
-    }
 }
