@@ -73,10 +73,17 @@ fun ProductList(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
+            .padding(innerPadding),
+        contentAlignment = Alignment.TopStart
     ) {
 
-        Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Row(
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -33,14 +33,22 @@ class ProductDetailsViewModel @Inject constructor(
     private var loadedId: Int? = null
 
     fun loadProduct(id: Int) {
-        if (id == loadedId && loadJob?.isActive == true)
+        if (id == loadedId && _uiState.value is LoadableState.Success) {
             return
+        }
 
         loadedId = id
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            _uiState.value = LoadableState.Loading
-            val hadCache = getProduct(id).first() != null
+            val initialCachedProduct = getProduct(id).first()
+            val hadCache = initialCachedProduct != null
+
+            if (initialCachedProduct != null) {
+                _uiState.value = LoadableState.Success(initialCachedProduct)
+            } else {
+                _uiState.value = LoadableState.Loading
+            }
+
             var recorded = false
 
             launch {
@@ -51,7 +59,7 @@ class ProductDetailsViewModel @Inject constructor(
                     throw e
                 }
                 catch(e: Exception) {
-                    if (hadCache) {
+                    if (!hadCache) {
                         _uiState.value =
                             LoadableState.Error(e.message ?: "Failed to load product")
                     }
@@ -62,7 +70,7 @@ class ProductDetailsViewModel @Inject constructor(
                 when {
                     product != null -> {
                         _uiState.value = LoadableState.Success(product)
-                        if (!recorded) {                           // new
+                        if (!recorded) {
                             recorded = true
                             recentlyViewedRepository.recordView(product.productId)
                         }

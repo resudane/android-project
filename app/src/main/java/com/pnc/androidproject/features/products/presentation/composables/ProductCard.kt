@@ -74,8 +74,11 @@ fun ProductCard(
                     }
                 )
             }
+            val displayName = product.name.ifBlank {
+                product.productNumber.ifBlank { "Product #${product.productId}" }
+            }
             Text(
-                text = product.name,
+                text = displayName,
                 style = MaterialTheme.typography.titleMedium
             )
         }
