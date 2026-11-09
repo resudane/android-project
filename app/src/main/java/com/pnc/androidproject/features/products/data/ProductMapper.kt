@@ -13,7 +13,8 @@ object ProductMapper {
             thumbnailPhotoFileName = dto.thumbnailPhotoFileName ?: "",
             warranty = dto.warranty ?: "",
             color = dto.color ?: "",
-            listPrice = dto.listPrice ?: 0.0
+            listPrice = dto.listPrice ?: 0.0,
+            quantity = dto.quantity ?: 0
         )
     }
 
@@ -27,7 +28,8 @@ object ProductMapper {
             thumbnailPhotoFileName = domain.thumbnailPhotoFileName ?: "",
             warranty = domain.warranty ?: "",
             color = domain.color ?: "",
-            listPrice = domain.listPrice ?: 0.0
+            listPrice = domain.listPrice ?: 0.0,
+            quantity = domain.quantity ?: 0
         )
     }
 }

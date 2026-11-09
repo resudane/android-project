@@ -16,7 +16,8 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
                 thumbnailPhotoFileName = "product1.jpg",
                 warranty = "1 year",
                 color = "Red",
-                listPrice = 100.0
+                listPrice = 100.0,
+                quantity = 10
             )
         )
     }

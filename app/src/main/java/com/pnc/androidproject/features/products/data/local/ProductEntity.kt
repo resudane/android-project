@@ -14,5 +14,6 @@ data class ProductEntity(
     val thumbnailPhotoFileName: String?,
     val warranty: String?,
     val color: String?,
-    val listPrice: Double?
+    val listPrice: Double?,
+    val quantity: Int?
 )

@@ -21,4 +21,6 @@ data class ProductDto(
     val color: String?,
     @SerializedName("listPrice", alternate = ["ListPrice", "price", "Price"])
     val listPrice: Double?,
+    @SerializedName("quantity", alternate = ["Quantity", "stock", "Stock"])
+    val quantity: Int? = null
 )

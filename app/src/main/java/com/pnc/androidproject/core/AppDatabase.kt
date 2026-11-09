@@ -11,7 +11,7 @@ import com.pnc.androidproject.features.products.data.local.RecentlyViewedEntity
 
 @Database(
     entities = [ProductEntity::class, FavoriteEntity::class, RecentlyViewedEntity::class],
-    version = 5,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
