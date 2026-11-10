@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.pnc.androidproject.features.products.presentation.state.ProductDirectoryState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +125,8 @@ fun ProductDirectory(
                     ) {
                         if (selectedProduct != null) {
                             ProductDetails(
-                                productId = selectedProduct.productId
+                                productId = selectedProduct.productId,
+                                navController = rememberNavController()
                             )
                         }
                     }

@@ -49,6 +49,7 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update { it.copy(recentIds = ids) }
             }
         }
+        loadProducts()
     }
 
     fun toggleFavorite(productId: Int, favorite: Boolean) {
@@ -69,15 +70,17 @@ class ProductDirectoryViewModel @Inject constructor(
         viewModelScope.launch { recentRepository.clearHistory() }
     }
 
-    fun loadProducts() {
+    fun loadProducts(forceRefresh: Boolean = false) {
         if (_uiState.value.isLoading) return
 
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isLoading = true,
-                    errorMessage = null
-                )
+            if (_uiState.value.products.isEmpty() || forceRefresh) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+                }
             }
 
             try {
@@ -89,7 +92,7 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Couldn't reload products"
+                        errorMessage = if (it.products.isEmpty()) e.message ?: "Couldn't reload products" else null
                     )
                 }
             }
