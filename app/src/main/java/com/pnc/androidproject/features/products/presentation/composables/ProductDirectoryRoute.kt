@@ -32,15 +32,6 @@ fun ProductDirectoryRoute(
                 onProductSelected(it)
             }
         },
-        onRetry = { viewModel.loadProducts() },
-//        onGenreChange = {
-//            viewModel.updateGenreFilter(it)
-//        },
-//        onLocationChange = {
-//            viewModel.updateLocationFilter(it)
-//        },
-//        onShowFilterChange = {
-//            viewModel.updateShowFilter(it)
-//        }
+        onRetry = { viewModel.loadProducts() }
     )
 }

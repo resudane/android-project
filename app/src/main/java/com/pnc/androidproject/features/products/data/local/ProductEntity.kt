@@ -15,5 +15,5 @@ data class ProductEntity(
     val warranty: String?,
     val color: String?,
     val listPrice: Double?,
-    val quantity: Int?
+    val stockLevel: Int?
 )
