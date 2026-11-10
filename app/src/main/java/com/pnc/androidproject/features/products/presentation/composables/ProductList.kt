@@ -14,26 +14,35 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.pnc.androidproject.features.products.domain.Product
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductList(
     products: List<Product>,
@@ -52,6 +61,8 @@ fun ProductList(
     innerPadding: PaddingValues
 ) {
     val listState = rememberLazyListState()
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
     val showScrollToTop by remember {
@@ -60,13 +71,23 @@ fun ProductList(
         }
     }
 
-    val displayedProducts = remember(products, showHistoryOnly, showFavoritesOnly, recentIds, favoriteIds) {
-        when {
-            showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
-            showFavoritesOnly -> products.filter { it.productId in favoriteIds }
-            else -> products
+    val displayedProducts =
+        remember(products, showHistoryOnly, showFavoritesOnly, recentIds, favoriteIds, searchQuery) {
+            val visibleProducts = when {
+                showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
+                showFavoritesOnly -> products.filter { it.productId in favoriteIds }
+                else -> products
+            }
+
+            if (searchQuery.isBlank()) {
+                visibleProducts
+            } else {
+                visibleProducts.filter {
+                    it.name.contains(searchQuery, ignoreCase = true)
+                            || it.productNumber.contains(searchQuery, ignoreCase = true)
+                }
+            }
         }
-    }
 
     Box(
         modifier = Modifier
@@ -107,6 +128,23 @@ fun ProductList(
                     }
                 }
             }
+            DockedSearchBar(
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = { focusManager.clearFocus() },
+                        expanded = false,
+                        onExpandedChange = {},
+                        placeholder = { Text("Search") },
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                expanded = false,
+                onExpandedChange = {},
+                modifier = Modifier.fillMaxWidth()
+            ) { }
             Row(
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -127,9 +165,26 @@ fun ProductList(
                 if (showHistoryOnly && recentIds.isNotEmpty()) {
                     TextButton(onClick = onClearHistory) { Text("Clear") }
                 }
+                SmallFloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = if (showScrollToTop) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                ) {
+                    Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
+                }
             }
             Card(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
@@ -140,7 +195,9 @@ fun ProductList(
                 ) {
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.fillMaxSize().padding(8.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
                     ) {
                         items(
                             items = displayedProducts,
@@ -166,23 +223,6 @@ fun ProductList(
                         )
                     }
                 }
-            }
-        }
-
-        AnimatedVisibility(
-            visible = showScrollToTop,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            SmallFloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        listState.animateScrollToItem(0)
-                    }
-                }
-            ) {
-                Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
             }
         }
 
