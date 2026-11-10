@@ -15,7 +15,7 @@ object ProductEntityMapper {
             warranty = entity.warranty ?: "",
             color = entity.color ?: "" ,
             listPrice = entity.listPrice ?: 0.0,
-            quantity = entity.quantity ?: 0
+            stockLevel = entity.stockLevel ?: 0
         )
     }
 
@@ -30,7 +30,7 @@ object ProductEntityMapper {
             warranty = domain.warranty,
             color = domain.color,
             listPrice = domain.listPrice,
-            quantity = domain.quantity
+            stockLevel = domain.stockLevel
         )
     }
 }

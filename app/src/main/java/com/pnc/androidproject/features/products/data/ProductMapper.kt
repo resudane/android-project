@@ -14,7 +14,7 @@ object ProductMapper {
             warranty = dto.warranty ?: "",
             color = dto.color ?: "",
             listPrice = dto.listPrice ?: 0.0,
-            quantity = dto.quantity ?: 0
+            stockLevel = dto.stockLevel ?: 0
         )
     }
 }

@@ -58,8 +58,8 @@ class OfflineProductRepository @Inject constructor(
                 else newEntity.color,
             listPrice = if (newEntity.listPrice == null || newEntity.listPrice == 0.0) existingEntity.listPrice
                 else newEntity.listPrice,
-            quantity = if (newEntity.quantity == null || newEntity.quantity == 0) existingEntity.quantity
-                else newEntity.quantity
+            stockLevel = if (newEntity.stockLevel == null || newEntity.stockLevel == 0) existingEntity.stockLevel
+                else newEntity.stockLevel
         )
     }
 

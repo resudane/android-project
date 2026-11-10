@@ -120,7 +120,7 @@ fun ProductDetails(
                             .padding(top = 8.dp, bottom = 8.dp)
                     )
                     Text(
-                        text = "Quantity: ${product.quantity}",
+                        text = "Quantity: ${product.stockLevel}",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
                             .align(Alignment.Start)
