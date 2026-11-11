@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.pnc.androidproject.features.orders.prsentation.composables.OrdersList
+import com.pnc.androidproject.features.orders.presentation.composables.OrdersList
 import com.pnc.androidproject.features.products.presentation.ProductListScreen
 import com.pnc.androidproject.features.products.presentation.composables.ProductDetails
 import kotlinx.coroutines.launch

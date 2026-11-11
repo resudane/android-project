@@ -1,7 +1,5 @@
 package com.pnc.androidproject.features.products.presentation.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.androidproject.features.products.data.FavoritesRepository
@@ -11,6 +9,7 @@ import com.pnc.androidproject.features.products.domain.RefreshProductsUseCase
 import com.pnc.androidproject.features.products.presentation.state.ProductDirectoryState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,14 +22,13 @@ class ProductDirectoryViewModel @Inject constructor(
     private val getAvailableProducts: GetAvailableProductsUseCase,
     private val refreshProducts: RefreshProductsUseCase,
     private val favoritesRepository: FavoritesRepository,
-    private val recentRepository: RecentlyViewedRepository,
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val recentRepository: RecentlyViewedRepository
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(
-        ProductDirectoryState()
-    )
 
+    private val _uiState = MutableStateFlow(ProductDirectoryState())
     val uiState: StateFlow<ProductDirectoryState> = _uiState.asStateFlow()
+
+    private var refreshJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -38,51 +36,21 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update { it.copy(products = products) }
             }
         }
-        viewModelScope.launch {
-            favoritesRepository.observeFavoriteIds().collect { ids ->
-                _uiState.update { it.copy(favoriteIds = ids) }
+    }
+
+    /**
+     * Prevents concurrent duplicate requests and handles content preservation on failure.
+     */
+    fun loadProducts() {
+        if (refreshJob?.isActive == true) return // Block duplicate request
+
+        refreshJob = viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isLoading = true,
+                    errorMessage = null
+                )
             }
-        }
-        viewModelScope.launch {
-            recentRepository.observeRecentIds().collect { ids ->
-                Log.d("RECENT", "Recent IDs from Room: $ids")
-                _uiState.update { it.copy(recentIds = ids) }
-            }
-        }
-        loadProducts()
-    }
-
-    fun toggleFavorite(productId: Int, favorite: Boolean) {
-        viewModelScope.launch {
-            favoritesRepository.setFavorite(productId, favorite)
-        }
-    }
-
-    fun setShowFavoritesOnly(show: Boolean) {
-        _uiState.update { it.copy(showFavoritesOnly = show) }
-    }
-
-    fun setShowHistoryOnly(show: Boolean) {
-        _uiState.update { it.copy(showHistoryOnly = show, showFavoritesOnly = false) }
-    }
-
-    fun clearHistory() {
-        viewModelScope.launch { recentRepository.clearHistory() }
-    }
-
-    fun loadProducts(forceRefresh: Boolean = false) {
-        if (_uiState.value.isLoading) return
-
-        viewModelScope.launch {
-            if (_uiState.value.products.isEmpty() || forceRefresh) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = true,
-                        errorMessage = null
-                    )
-                }
-            }
-
             try {
                 refreshProducts()
                 _uiState.update { it.copy(isLoading = false) }
@@ -92,19 +60,15 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = if (it.products.isEmpty()) e.message ?: "Couldn't reload products" else null
+                        // Preserves existing products in list while setting error message
+                        errorMessage = e.message ?: "Failed to update products. Please try again."
                     )
                 }
             }
         }
     }
 
-    fun setSelectedProduct(productId: Int) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                chosenProductId = productId
-            )
-        }
+    fun dismissError() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
-
 }
