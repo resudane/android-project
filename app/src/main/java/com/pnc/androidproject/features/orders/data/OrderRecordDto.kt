@@ -11,5 +11,7 @@ data class OrderRecordDto(
     val productName: String,
     val orderQty: Int,
     val unitPrice: Double,
-    val lineTotal: Double
+    val lineTotal: Double,
+    val status: Int,
+    val statusName: String
 )

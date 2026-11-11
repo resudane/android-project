@@ -28,6 +28,8 @@ class OrderMapper @Inject constructor(){
                     orderDate = firstRecord.orderDate,
                     shipDate = firstRecord.shipDate,
                     orderNumber = firstRecord.orderNumber,
+                    status = firstRecord.status,
+                    statusName = firstRecord.statusName,
                     lineItems = lineItems
                 )
             }
@@ -42,6 +44,8 @@ class OrderMapper @Inject constructor(){
             shipDate = dto.shipDate?.let {
                 LocalDateTime.parse(it)
             } ?: LocalDateTime.MIN,
+            status = dto.status,
+            statusName = dto.statusName,
             items = dto.lineItems.mapIndexed { index, item ->
                 LineItem(
                     id = index,

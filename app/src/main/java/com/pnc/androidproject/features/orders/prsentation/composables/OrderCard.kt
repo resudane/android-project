@@ -37,6 +37,7 @@ fun OrderCard(order: Order) {
                     order.shipDate?.format(formatter) ?: "Not shipped"
                 }"
             )
+            Text("Status: ${order.statusName}")
         }
     }
 }
