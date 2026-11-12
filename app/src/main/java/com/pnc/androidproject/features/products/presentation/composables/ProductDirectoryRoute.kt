@@ -32,6 +32,7 @@ fun ProductDirectoryRoute(
                 onProductSelected(it)
             }
         },
-        onRetry = { viewModel.loadProducts() }
+        onRetry = { viewModel.loadProducts(forceRefresh = true) },
+        onRefresh = { viewModel.loadProducts(forceRefresh = true) }
     )
 }
