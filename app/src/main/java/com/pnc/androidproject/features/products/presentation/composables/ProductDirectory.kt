@@ -47,7 +47,8 @@ fun ProductDirectory(
     onProductSelected: (Int) -> Unit = {},
     onShowFilterChange: (Boolean) -> Unit = {},
     onClearHistory: () -> Unit = {},
-    onRetry: () -> Unit = {}
+    onRetry: () -> Unit = {},
+    onRefresh: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -107,7 +108,8 @@ fun ProductDirectory(
                         onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                         onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
                         onClearHistory = { onClearHistory() },
-                        innerPadding = PaddingValues(0.dp)
+                        innerPadding = PaddingValues(0.dp),
+                        refreshProducts = onRefresh
                     )
                 }
                 VerticalDivider()
@@ -147,7 +149,8 @@ fun ProductDirectory(
                 onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                 onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
                 onClearHistory = { onClearHistory() },
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                refreshProducts = onRefresh
             )
         }
     }
