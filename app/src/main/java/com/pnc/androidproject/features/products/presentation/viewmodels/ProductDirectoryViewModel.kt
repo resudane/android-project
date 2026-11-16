@@ -85,14 +85,26 @@ class ProductDirectoryViewModel @Inject constructor(
 
             try {
                 refreshProducts()
-                _uiState.update { it.copy(isLoading = false) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = if (it.products.isEmpty()) e.message ?: "Couldn't reload products" else null
+                        errorMessage = null
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val userMsg = when (e) {
+                    is java.net.UnknownHostException,
+                    is java.net.ConnectException,
+                    is java.net.SocketTimeoutException,
+                    is java.io.IOException -> "Couldn't connect. Please check your network connection and try again."
+                    else -> e.message ?: "Unable to load products due to a network error."
+                }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = userMsg
                     )
                 }
             }
