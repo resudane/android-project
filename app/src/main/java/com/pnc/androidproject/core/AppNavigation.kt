@@ -66,48 +66,51 @@ fun AppNavigation() {
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(drawerItems.find { it.route == currentRoute }?.label ?: "") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Open menu")
-                        }
-                    },
-                    actions = {
-                        if (currentRoute == "products") {
-                            val navBackStackEntry = navController.currentBackStackEntry
-                            if (navBackStackEntry != null) {
-                                val viewModel: ProductDirectoryViewModel = hiltViewModel(navBackStackEntry)
-                                IconButton(
-                                    onClick = {
-                                        viewModel.loadProducts(forceRefresh = true)
+                val isTopLevelRoute = drawerItems.any { it.route == currentRoute }
+                if (isTopLevelRoute) {
+                    TopAppBar(
+                        title = { Text(drawerItems.find { it.route == currentRoute }?.label ?: "") },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Open menu")
+                            }
+                        },
+                        actions = {
+                            if (currentRoute == "products") {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                if (navBackStackEntry != null) {
+                                    val viewModel: ProductDirectoryViewModel = hiltViewModel(navBackStackEntry)
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.loadProducts(forceRefresh = true)
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Refresh,
+                                            contentDescription = "Refresh products"
+                                        )
                                     }
-                                ) {
-                                    Icon(
-                                        Icons.Default.Refresh,
-                                        contentDescription = "Refresh products"
-                                    )
+                                }
+                            }
+                            if (currentRoute == "orders") {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                if (navBackStackEntry != null) {
+                                    val viewModel: OrdersViewModel = hiltViewModel(navBackStackEntry)
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.loadOrders()
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Refresh,
+                                            contentDescription = "Refresh orders"
+                                        )
+                                    }
                                 }
                             }
                         }
-                        if (currentRoute == "orders") {
-                            val navBackStackEntry = navController.currentBackStackEntry
-                            if (navBackStackEntry != null) {
-                                val viewModel: OrdersViewModel = hiltViewModel(navBackStackEntry)
-                                IconButton(
-                                    onClick = {
-                                        viewModel.loadOrders()
-                                    }
-                                ) {
-                                    Icon(
-                                        Icons.Default.Refresh,
-                                        contentDescription = "Refresh orders"
-                                    )
-                                }
-                            }
-                        }
-                    }
-                )
+                    )
+                }
             }
         ) { padding ->
             NavHost(
