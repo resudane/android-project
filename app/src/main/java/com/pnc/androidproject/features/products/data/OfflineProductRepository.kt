@@ -16,24 +16,23 @@ import javax.inject.Singleton
 class OfflineProductRepository @Inject constructor(
     private val productDao: ProductDao,
     private val remote: ProductDataSource,
-    private val fallbackSource: HardCodedProductDataSource
 ) : ProductRepository {
     override fun observeProducts(): Flow<List<Product>> =
         productDao.observeProducts().map { list ->
-            if (list.isEmpty()) {
-                fallbackSource.getProducts().map {
-                    ProductEntityMapper.mapToDomain(ProductEntityMapper.mapToEntity(it))
-                }
-            } else {
-                list.map { entity ->
-                    ProductEntityMapper.mapToDomain(entity)
-                }
-            }
+            list.filterNot { entity ->
+                entity.productId == 1
+                        && entity.name == "Product Temp"
+                        && entity.productNumber == "12345"
+            }.map { entity -> ProductEntityMapper.mapToDomain(entity) }
         }
 
     override fun observeProduct(id: Int): Flow<Product?> =
         productDao.observeProduct(id).map { entity ->
-            entity?.let { ProductEntityMapper.mapToDomain(it) }
+            entity?.takeIf {
+                !(it.productId == 1
+                        && it.name == "Product Temp"
+                        && it.productNumber == "12345")
+            }?.let { ProductEntityMapper.mapToDomain(it) }
         }
 
     private fun mergeEntities(
@@ -78,13 +77,7 @@ class OfflineProductRepository @Inject constructor(
 
             productDao.replaceAll(entities)
         } catch (e: Exception) {
-            Log.w("OfflineProductRepository", "refreshProducts remote call failed: ${e.message}")
-            val existing = productDao.observeProducts().first()
-            if (existing.isEmpty()) {
-                val fallbackDtos = fallbackSource.getProducts()
-                val fallbackEntities = fallbackDtos.map { ProductEntityMapper.mapToEntity(it) }
-                productDao.replaceAll(fallbackEntities)
-            }
+            throw e
         }
     }
 
@@ -97,19 +90,7 @@ class OfflineProductRepository @Inject constructor(
 
             productDao.upsertProduct(listOf(finalEntity))
         } catch (e: Exception) {
-            Log.w(
-                "OfflineProductRepository",
-                "refreshProduct($id) remote call failed: ${e.message}"
-            )
-            val existingEntity = productDao.observeProduct(id).first()
-            if (existingEntity == null) {
-                try {
-                    val fallbackDto = fallbackSource.getProduct(id)
-                    productDao.upsertProduct(listOf(ProductEntityMapper.mapToEntity(fallbackDto)))
-                } catch (_: Exception) {
-                    // Fallback source has no matching product
-                }
-            }
+            throw e
         }
     }
 }
