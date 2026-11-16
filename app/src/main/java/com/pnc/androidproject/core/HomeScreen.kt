@@ -66,40 +66,42 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 )
             ) {
-                if(orders.isNotEmpty()){
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(4.dp),
-                        shape = MaterialTheme.shapes.large,
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        )
-                    ) {
-                        Text(
-                            "Recent Orders",
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth().padding(4.dp)
-                        )
-                    }
-                    for (order in orders) {
-                        OrderCard( order = order )
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(4.dp),
-                        shape = MaterialTheme.shapes.large,
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        )
-                    ) {
-                        Text(
-                            "No Order History",
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth().padding(4.dp)
-                        )
+                Column(){//modifier = Modifier.padding(4.dp)) {
+                    if (orders.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(4.dp),
+                            shape = MaterialTheme.shapes.large,
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            )
+                        ) {
+                            Text(
+                                "Recent Orders",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(4.dp)
+                            )
+                        }
+                        for (order in orders) {
+                            OrderCard(order = order)
+                        }
+                    } else {
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(4.dp),
+                            shape = MaterialTheme.shapes.large,
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            )
+                        ) {
+                            Text(
+                                "No Order History",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
@@ -111,10 +113,7 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
             )
         ) {
-            Column(
-                //verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(4.dp)
-            ) {
+            Column( modifier = Modifier.padding(4.dp)) {
                 if (recent.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth()
