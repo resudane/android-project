@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.pnc.androidproject.features.orders.prsentation.composables.OrderCard
 import com.pnc.androidproject.features.products.presentation.composables.ProductCard
 
 @Composable
@@ -32,6 +33,7 @@ fun HomeScreen(
         .padding(vertical = 12.dp)
 
     val recent by viewModel.recentProducts.collectAsState()
+    val orders by viewModel.orders.collectAsState()
 
     Column(
         modifier = Modifier
@@ -41,7 +43,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Welcome Back, ...",
+            text = "Welcome Back, Olivia",
             modifier = titleModifier,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayMedium.copy(
@@ -64,12 +66,42 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 )
             ) {
-                Text(
-                    "No Order History",
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().padding(4.dp)
-                )
+                if(orders.isNotEmpty()){
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(4.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        )
+                    ) {
+                        Text(
+                            "Recent Orders",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(4.dp)
+                        )
+                    }
+                    for (order in orders) {
+                        OrderCard( order = order )
+                    }
+                } else {
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(4.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        )
+                    ) {
+                        Text(
+                            "No Order History",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(4.dp)
+                        )
+                    }
+                }
             }
         }
         Card(
@@ -93,7 +125,7 @@ fun HomeScreen(
                         )
                     ) {
                         Text(
-                            "Recently viewed",
+                            "Recently Viewed Products",
                             style = MaterialTheme.typography.titleMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().padding(4.dp)
