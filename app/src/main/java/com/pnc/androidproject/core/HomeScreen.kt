@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.pnc.androidproject.features.orders.prsentation.composables.OrderCard
 import com.pnc.androidproject.features.products.presentation.composables.ProductCard
 
 @Composable
@@ -84,7 +83,16 @@ fun HomeScreen(
                             )
                         }
                         for (order in orders) {
-                            OrderCard(order = order)
+                            Card(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(4.dp),
+                                shape = MaterialTheme.shapes.large,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                )
+                            ) {
+                                Text(text = "Order #${order.id}")
+                            }
                         }
                     } else {
                         Card(

@@ -2,6 +2,7 @@ package com.pnc.androidproject.core
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pnc.androidproject.features.orders.data.OrderDto
 import com.pnc.androidproject.features.orders.domain.Order
 import com.pnc.androidproject.features.orders.domain.OrderRepository
 import com.pnc.androidproject.features.products.data.RecentlyViewedRepository
