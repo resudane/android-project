@@ -4,6 +4,7 @@ package com.pnc.androidproject.core
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -53,30 +54,16 @@ fun AppNavigation() {
     Scaffold(
         topBar = {
             val title = when {
+                currentRoute?.startsWith("home") == true -> "Welcome, Olivia"
                 currentRoute?.startsWith("product/") == true -> "Details"
                 else -> tabItems.find { it.route == currentRoute }?.label ?: ""
             }
             TopAppBar(
-                title = { Text (title)
-//                    if (currentRoute == "home") {
-//                        Text(
-//                            text = "Hello, Olivia",
-//                            style = MaterialTheme.typography.displaySmall.copy(
-//                                fontWeight = FontWeight.Bold
-//                            ),
-//                        )
-//                    } else if (currentRoute == "products"){
-//                        Text("Products")
-//                    }
-//                    else {
-//                        Text(
-//                            tabItems.find { it.route == currentRoute }?.label ?: "",
-//                            style = MaterialTheme.typography.displaySmall.copy(
-//                                fontWeight = FontWeight.Bold
-//                            ),
-//                            modifier = Modifier.fillMaxWidth()
-//                        )
-//                    }
+                title = {
+                    Text ( text = title,
+                        style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.Bold)
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -109,7 +96,17 @@ fun AppNavigation() {
                             }
                         }
                     }
-                }
+                },
+                navigationIcon = {
+                    if (currentRoute?.startsWith("product/") == true) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                },
             )
         },
         bottomBar = {

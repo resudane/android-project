@@ -45,59 +45,50 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(8.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                )
-            ) {
-                Column(){
-                    if (orders.isNotEmpty()) {
+            Column(modifier = Modifier.padding(4.dp)) {
+                if (orders.isNotEmpty()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(4.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        )
+                    ) {
+                        Text(
+                            "Recent Orders",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(4.dp)
+                        )
+                    }
+                    for (order in orders) {
                         Card(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(4.dp),
+                            modifier = Modifier.fillMaxWidth().padding(4.dp),
                             shape = MaterialTheme.shapes.large,
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                             )
                         ) {
                             Text(
-                                "Recent Orders",
-                                style = MaterialTheme.typography.titleMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth().padding(4.dp)
+                                text = "Order #${order.id}",
+                                modifier = Modifier.padding(16.dp)
                             )
                         }
-                        for (order in orders) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(4.dp),
-                                shape = MaterialTheme.shapes.large,
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                                )
-                            ) {
-                                Text(text = "Order #${order.id}")
-                            }
-                        }
-                    } else {
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(4.dp),
-                            shape = MaterialTheme.shapes.large,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            )
-                        ) {
-                            Text(
-                                "No Order History",
-                                style = MaterialTheme.typography.titleMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                    }
+                } else {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(4.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        )
+                    ) {
+                        Text(
+                            "No Order History",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(4.dp)
+                        )
                     }
                 }
             }
