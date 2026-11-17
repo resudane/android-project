@@ -5,6 +5,7 @@ package com.pnc.androidproject.core
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
@@ -13,6 +14,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -26,6 +30,7 @@ import com.pnc.androidproject.features.orders.prsentation.viewmodels.OrdersViewM
 import com.pnc.androidproject.features.products.presentation.ProductListScreen
 import com.pnc.androidproject.features.products.presentation.composables.ProductDetails
 import com.pnc.androidproject.features.products.presentation.viewmodels.ProductDirectoryViewModel
+import com.pnc.androidproject.features.profile.ProfileScreen
 import kotlinx.coroutines.launch
 
 data class TabItem(val label: String, val route: String, val icon: ImageVector)
@@ -33,7 +38,8 @@ data class TabItem(val label: String, val route: String, val icon: ImageVector)
 val tabItems = listOf(
     TabItem("Home", "home", Icons.Default.Home),
     TabItem("Products", "products", Icons.Default.ShoppingCart),
-    TabItem("Orders", "orders", Icons.AutoMirrored.Filled.List)
+    TabItem("Orders", "orders", Icons.AutoMirrored.Filled.List),
+    TabItem("Profile", "profile", Icons.Default.AccountCircle)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,20 +48,45 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val currentRoute = navController
         .currentBackStackEntryAsState().value?.destination?.route
-
     val showBottomBar = tabItems.any { it.route == currentRoute }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(tabItems.find { it.route == currentRoute }?.label ?: "") },
+                title = {
+                    if (currentRoute == "home") {
+                        Text(
+                            text = "Hello, Olivia",
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                        )
+                    } else {
+                        Text(
+                            tabItems.find { it.route == currentRoute }?.label ?: "",
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 actions = {
                     if (currentRoute == "products") {
                         val navBackStackEntry = navController.currentBackStackEntry
                         if (navBackStackEntry != null) {
-                            val viewModel: ProductDirectoryViewModel = hiltViewModel(navBackStackEntry)
+                            val viewModel: ProductDirectoryViewModel =
+                                hiltViewModel(navBackStackEntry)
                             IconButton(onClick = { viewModel.loadProducts(forceRefresh = true) }) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Refresh products")
+                                Icon(
+                                    Icons.Default.Refresh,
+                                    contentDescription = "Refresh products"
+                                )
                             }
                         }
                     }
@@ -64,7 +95,10 @@ fun AppNavigation() {
                         if (navBackStackEntry != null) {
                             val viewModel: OrdersViewModel = hiltViewModel(navBackStackEntry)
                             IconButton(onClick = { viewModel.loadOrders() }) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Refresh orders")
+                                Icon(
+                                    Icons.Default.Refresh,
+                                    contentDescription = "Refresh orders"
+                                )
                             }
                         }
                     }
@@ -73,7 +107,9 @@ fun AppNavigation() {
         },
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
                     tabItems.forEach { item ->
                         NavigationBarItem(
                             selected = currentRoute == item.route,
@@ -87,7 +123,14 @@ fun AppNavigation() {
                                 }
                             },
                             icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                            label = { Text(item.label) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                indicatorColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         )
                     }
                 }
@@ -125,6 +168,9 @@ fun AppNavigation() {
             }
             composable("orders") {
                 OrdersList(viewModel = hiltViewModel())
+            }
+            composable("profile"){
+                ProfileScreen()
             }
         }
     }

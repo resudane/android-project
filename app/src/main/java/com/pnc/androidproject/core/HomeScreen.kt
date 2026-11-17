@@ -27,10 +27,6 @@ fun HomeScreen(
     onProductSelected: (Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val titleModifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)
-
     val recent by viewModel.recentProducts.collectAsState()
     val orders by viewModel.orders.collectAsState()
 
@@ -41,20 +37,12 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Welcome Back, Olivia",
-            modifier = titleModifier,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
         Spacer(modifier = Modifier.weight(1f))
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                containerColor = MaterialTheme.colorScheme.primary
             )
         ) {
             Card(
@@ -65,7 +53,7 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 )
             ) {
-                Column(){//modifier = Modifier.padding(4.dp)) {
+                Column(){
                     if (orders.isNotEmpty()) {
                         Card(
                             modifier = Modifier.fillMaxWidth()
@@ -118,7 +106,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                containerColor = MaterialTheme.colorScheme.primary
             )
         ) {
             Column( modifier = Modifier.padding(4.dp)) {
