@@ -8,7 +8,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -16,8 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -32,7 +29,6 @@ import com.pnc.androidproject.features.products.presentation.ProductListScreen
 import com.pnc.androidproject.features.products.presentation.composables.ProductDetails
 import com.pnc.androidproject.features.products.presentation.viewmodels.ProductDirectoryViewModel
 import com.pnc.androidproject.features.profile.ProfileScreen
-import kotlinx.coroutines.launch
 
 data class TabItem(val label: String, val route: String, val icon: ImageVector)
 
@@ -166,7 +162,6 @@ fun AppNavigation() {
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getInt("productId") ?: 0
                 ProductDetails(
-                    navController = navController,
                     productId = productId
                 )
             }
