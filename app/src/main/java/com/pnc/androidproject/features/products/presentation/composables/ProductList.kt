@@ -281,9 +281,14 @@ fun ProductList(
                         }
                     },
                     containerColor = if (showScrollToTop) {
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.primaryContainer
                     } else {
                         MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    contentColor = if (showScrollToTop) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 ) {
                     Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
@@ -295,8 +300,8 @@ fun ProductList(
                     },
                     shape = RoundedCornerShape(12.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     Icon(Icons.Filled.FilterList, contentDescription = "Filter")

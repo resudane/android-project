@@ -66,23 +66,7 @@ fun ProductDetails(
         viewModel.loadProduct(productId)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Details")
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         when (val currentState = state) {
             is LoadableState.Loading -> {
                 Box(

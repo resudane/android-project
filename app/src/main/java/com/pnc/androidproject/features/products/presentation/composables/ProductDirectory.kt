@@ -68,7 +68,7 @@ fun ProductDirectory(
                 )
 
                 Text(
-                    text = "Displaying artists",
+                    text = "Displaying products",
                     modifier = Modifier.padding(0.dp, 12.dp)
                 )
             }
@@ -117,7 +117,7 @@ fun ProductDirectory(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Artists selected")
+                    Text("Products selected")
 
                     val selectedProduct = state.chosenProduct
                     AnimatedVisibility(
