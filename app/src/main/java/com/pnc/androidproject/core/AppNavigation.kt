@@ -52,24 +52,31 @@ fun AppNavigation() {
 
     Scaffold(
         topBar = {
+            val title = when {
+                currentRoute?.startsWith("product/") == true -> "Details"
+                else -> tabItems.find { it.route == currentRoute }?.label ?: ""
+            }
             TopAppBar(
-                title = {
-                    if (currentRoute == "home") {
-                        Text(
-                            text = "Hello, Olivia",
-                            style = MaterialTheme.typography.displaySmall.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                        )
-                    } else {
-                        Text(
-                            tabItems.find { it.route == currentRoute }?.label ?: "",
-                            style = MaterialTheme.typography.displaySmall.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                title = { Text (title)
+//                    if (currentRoute == "home") {
+//                        Text(
+//                            text = "Hello, Olivia",
+//                            style = MaterialTheme.typography.displaySmall.copy(
+//                                fontWeight = FontWeight.Bold
+//                            ),
+//                        )
+//                    } else if (currentRoute == "products"){
+//                        Text("Products")
+//                    }
+//                    else {
+//                        Text(
+//                            tabItems.find { it.route == currentRoute }?.label ?: "",
+//                            style = MaterialTheme.typography.displaySmall.copy(
+//                                fontWeight = FontWeight.Bold
+//                            ),
+//                            modifier = Modifier.fillMaxWidth()
+//                        )
+//                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
