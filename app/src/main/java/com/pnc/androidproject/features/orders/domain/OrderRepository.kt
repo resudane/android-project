@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface OrderRepository {
     suspend fun getOrders(): List<Order>
+    suspend fun refreshOrders(): List<Order>
 }

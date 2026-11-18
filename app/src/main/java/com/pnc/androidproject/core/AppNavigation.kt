@@ -86,7 +86,7 @@ fun AppNavigation() {
                         val navBackStackEntry = navController.currentBackStackEntry
                         if (navBackStackEntry != null) {
                             val viewModel: OrdersViewModel = hiltViewModel(navBackStackEntry)
-                            IconButton(onClick = { viewModel.loadOrders() }) {
+                            IconButton(onClick = { viewModel.refreshOrders() }) {
                                 Icon(
                                     Icons.Default.Refresh,
                                     contentDescription = "Refresh orders"

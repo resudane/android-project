@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.androidproject.features.orders.domain.GetOrdersUseCase
 import com.pnc.androidproject.features.orders.domain.Order
+import com.pnc.androidproject.features.orders.domain.RefreshOrdersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrdersViewModel @Inject constructor(
-    private val getOrdersUseCase: GetOrdersUseCase
+    private val getOrdersUseCase: GetOrdersUseCase,
+    private val refreshOrdersUseCase: RefreshOrdersUseCase
 ) : ViewModel() {
 
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
@@ -34,6 +36,20 @@ class OrdersViewModel @Inject constructor(
                 _orders.value = getOrdersUseCase()
             } catch (e: Exception) {
                 _error.value = e.message ?: "Unable to load orders"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+    fun refreshOrders() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
+            try {
+                _orders.value = refreshOrdersUseCase()
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Unable to refresh orders"
             } finally {
                 _isLoading.value = false
             }

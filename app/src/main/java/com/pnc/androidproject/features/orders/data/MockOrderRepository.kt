@@ -52,4 +52,7 @@ class MockOrderRepository: OrderRepository {
             )
         )
     }
+    override suspend fun refreshOrders(): List<Order> {
+        return getOrders()
+    }
 }
