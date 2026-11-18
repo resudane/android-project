@@ -90,7 +90,7 @@ fun HomeScreen(
                             ) {
                                 Text(text = "Order #${order.id}")
                                 Text(text = "$${"%.2f".format(total)}")
-                                Text(text = order.statusName)
+                                Text(text = order.statusName ?: "Unknown Status")
                             }
                         }
                     }
