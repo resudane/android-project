@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.pnc.androidproject.features.orders.prsentation.composables.OrderDetails
 import com.pnc.androidproject.features.orders.prsentation.composables.OrdersList
 import com.pnc.androidproject.features.orders.prsentation.viewmodels.OrdersViewModel
 import com.pnc.androidproject.features.products.presentation.ProductListScreen
@@ -166,9 +167,23 @@ fun AppNavigation() {
                 )
             }
             composable("orders") {
-                OrdersList(viewModel = hiltViewModel())
-            }
-            composable("profile"){
+                    OrdersList(
+                        onOrderClick = {orderId ->
+                            navController.navigate("order/$orderId")
+                        },
+                        viewModel = hiltViewModel()
+                    )
+                }
+                composable(
+                    route = "order/{orderId}",
+                    arguments = listOf(navArgument("orderId"){ type = NavType.IntType})
+                ) { backStackEntry ->
+                    val orderId = backStackEntry.arguments?.getInt("orderId") ?: 0
+                    OrderDetails(
+                        orderId = orderId
+                    )
+                }
+              composable("profile"){
                 ProfileScreen()
             }
         }

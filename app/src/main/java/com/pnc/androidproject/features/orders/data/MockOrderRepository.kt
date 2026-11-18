@@ -20,6 +20,8 @@ class MockOrderRepository: OrderRepository {
                 lastName = "Maule",
                 orderDate = LocalDateTime.now(),
                 shipDate = LocalDateTime.now().plusDays(2),
+                status = 5,
+                statusName = "Shipped",
                 items = listOf(
                     LineItem(
                         id = 1,
@@ -44,6 +46,8 @@ class MockOrderRepository: OrderRepository {
                 lastName = "Maule",
                 orderDate = LocalDateTime.now().minusDays(3),
                 shipDate = LocalDateTime.now().minusDays(1),
+                status = 5,
+                statusName = "Shipped",
                 items = emptyList()
             )
         )
