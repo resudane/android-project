@@ -6,6 +6,7 @@ import com.pnc.androidproject.core.AppDatabase
 import com.pnc.androidproject.features.products.data.local.FavoriteDao
 import com.pnc.androidproject.features.products.data.local.ProductDao
 import com.pnc.androidproject.features.products.data.local.RecentlyViewedDao
+import com.pnc.androidproject.features.orders.data.local.OrderDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +46,11 @@ object DatabaseModule {
     @Singleton
     fun provideRecentlyViewedDao(database: AppDatabase): RecentlyViewedDao {
         return database.recentlyViewedDao()
+    }
+    @Provides
+    @Singleton
+    fun provideOrderDao(database: AppDatabase): OrderDao{
+        return database.orderDao()
     }
 
 }
