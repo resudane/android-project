@@ -51,7 +51,7 @@ fun AppNavigation() {
     Scaffold(
         topBar = {
             val title = when {
-                currentRoute?.startsWith("home") == true -> "Welcome, Olivia"
+                currentRoute?.startsWith("home") == true -> "Home"
                 currentRoute?.startsWith("product/") == true -> "Details"
                 currentRoute?.startsWith("order/") == true -> "Details"
                 else -> tabItems.find { it.route == currentRoute }?.label ?: ""
