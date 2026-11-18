@@ -19,6 +19,8 @@ class OrderDetailsViewModel @Inject constructor(
         private set
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+    val orderTotal: Double
+        get() = order?.items?.sumOf { it.lineTotal } ?: 0.0
     fun loadOrder(orderId: Int){
         viewModelScope.launch{
             isLoading = true
