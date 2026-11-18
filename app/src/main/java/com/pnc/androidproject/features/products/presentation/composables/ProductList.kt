@@ -31,6 +31,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,7 +72,6 @@ fun ProductList(
     products: List<Product>,
     isLoading: Boolean = false,
     errorMessage: String? = null,
-    onRetry: () -> Unit = {},
     showFavoritesOnly: Boolean,
     showHistoryOnly: Boolean,
     favoriteIds: Set<Int>,
@@ -262,12 +262,20 @@ fun ProductList(
                     FilterChip(
                         selected = showFavoritesOnly,
                         onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
-                        label = { Text("Saved") }
+                        label = { Text("Saved") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     )
                     FilterChip(
                         selected = showHistoryOnly,
                         onClick = { onSetShowHistoryOnly(!showHistoryOnly) },
-                        label = { Text("History") }
+                        label = { Text("History") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     )
                     if (showHistoryOnly && recentIds.isNotEmpty()) {
                         TextButton(onClick = onClearHistory) { Text("Clear") }
@@ -281,9 +289,14 @@ fun ProductList(
                         }
                     },
                     containerColor = if (showScrollToTop) {
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.primaryContainer
                     } else {
                         MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    contentColor = if (showScrollToTop) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 ) {
                     Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
@@ -295,8 +308,8 @@ fun ProductList(
                     },
                     shape = RoundedCornerShape(12.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     Icon(Icons.Filled.FilterList, contentDescription = "Filter")

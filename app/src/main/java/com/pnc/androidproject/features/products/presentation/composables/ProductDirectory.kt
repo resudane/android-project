@@ -16,14 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Filter
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,10 +27,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.pnc.androidproject.features.products.presentation.state.ProductDirectoryState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +61,7 @@ fun ProductDirectory(
                 )
 
                 Text(
-                    text = "Displaying artists",
+                    text = "Displaying products",
                     modifier = Modifier.padding(0.dp, 12.dp)
                 )
             }
@@ -98,7 +91,6 @@ fun ProductDirectory(
                         products = state.displayedProducts,
                         isLoading = state.isLoading,
                         errorMessage = state.errorMessage,
-                        onRetry = onRetry,
                         showFavoritesOnly = state.showFavoritesOnly,
                         showHistoryOnly = state.showHistoryOnly,
                         favoriteIds = state.favoriteIds,
@@ -117,7 +109,7 @@ fun ProductDirectory(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Artists selected")
+                    Text("Products selected")
 
                     val selectedProduct = state.chosenProduct
                     AnimatedVisibility(
@@ -127,8 +119,7 @@ fun ProductDirectory(
                     ) {
                         if (selectedProduct != null) {
                             ProductDetails(
-                                productId = selectedProduct.productId,
-                                navController = rememberNavController()
+                                productId = selectedProduct.productId
                             )
                         }
                     }
@@ -139,7 +130,6 @@ fun ProductDirectory(
                 products = state.displayedProducts,
                 isLoading = state.isLoading,
                 errorMessage = state.errorMessage,
-                onRetry = onRetry,
                 showFavoritesOnly = state.showFavoritesOnly,
                 showHistoryOnly = state.showHistoryOnly,
                 favoriteIds = state.favoriteIds,
