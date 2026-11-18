@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 
 @Composable
 fun OrdersList(
+    onOrderClick: (Int) -> Unit,
     viewModel: OrdersViewModel
 ) {
     val orders by viewModel.orders.collectAsState()
@@ -45,7 +46,10 @@ fun OrdersList(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(orders) { order ->
-                        OrderCard(order = order)
+                        OrderCard(
+                            order = order,
+                            onClick = {onOrderClick(order.id)}
+                        )
                     }
                 }
             }
