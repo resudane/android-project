@@ -1,5 +1,6 @@
 package com.pnc.androidproject.features.orders.prsentation.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,12 +14,16 @@ import com.pnc.androidproject.features.orders.domain.Order
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun OrderCard(order: Order) {
+fun OrderCard(
+    order: Order,
+          onClick: () -> Unit
+) {
 
     val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
 
     Card(
         modifier = Modifier.fillMaxWidth()
+            .clickable{ onClick()}
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -37,6 +42,7 @@ fun OrderCard(order: Order) {
                     order.shipDate?.format(formatter) ?: "Not shipped"
                 }"
             )
+            Text("Status: ${order.statusName}")
         }
     }
 }

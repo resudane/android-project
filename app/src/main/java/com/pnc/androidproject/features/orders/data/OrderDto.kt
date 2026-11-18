@@ -8,5 +8,7 @@ data class OrderDto (
     val orderDate: String,
     val shipDate: String?,
     val orderNumber: Int,
+    val status: Int,
+    val statusName: String,
     val lineItems: List<LineItemDto>
 )
