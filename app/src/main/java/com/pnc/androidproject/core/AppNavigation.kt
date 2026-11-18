@@ -53,6 +53,7 @@ fun AppNavigation() {
             val title = when {
                 currentRoute?.startsWith("home") == true -> "Welcome, Olivia"
                 currentRoute?.startsWith("product/") == true -> "Details"
+                currentRoute?.startsWith("order/") == true -> "Details"
                 else -> tabItems.find { it.route == currentRoute }?.label ?: ""
             }
             TopAppBar(
@@ -95,7 +96,7 @@ fun AppNavigation() {
                     }
                 },
                 navigationIcon = {
-                    if (currentRoute?.startsWith("product/") == true) {
+                    if (currentRoute?.startsWith("product/") == true || currentRoute?.startsWith("order/") == true) {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -147,6 +148,9 @@ fun AppNavigation() {
                 HomeScreen(
                     onProductSelected = { productId ->
                         navController.navigate("product/$productId")
+                    },
+                    onOrderClick = { orderId ->
+                        navController.navigate("order/$orderId")
                     }
                 )
             }

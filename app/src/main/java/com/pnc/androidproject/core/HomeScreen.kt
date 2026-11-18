@@ -2,6 +2,7 @@ package com.pnc.androidproject.core
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +27,7 @@ import com.pnc.androidproject.features.products.presentation.composables.Product
 @Composable
 fun HomeScreen(
     onProductSelected: (Int) -> Unit,
+    onOrderClick: (Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val recent by viewModel.recentProducts.collectAsState()
@@ -63,16 +66,25 @@ fun HomeScreen(
                     }
                     for (order in orders) {
                         Card(
+                            onClick = { onOrderClick(order.id) },
                             modifier = Modifier.fillMaxWidth().padding(4.dp),
                             shape = MaterialTheme.shapes.large,
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                             )
                         ) {
-                            Text(
-                                text = "Order #${order.id}",
-                                modifier = Modifier.padding(16.dp)
-                            )
+                            val total = order.items.sumOf { it.unitPrice }
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "Order #${order.id}")
+                                Text(text = "$${"%.2f".format(total)}")
+                                Text(text = order.statusName)
+                            }
                         }
                     }
                 } else {
