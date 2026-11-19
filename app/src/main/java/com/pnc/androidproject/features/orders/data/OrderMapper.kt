@@ -1,5 +1,8 @@
 package com.pnc.androidproject.features.orders.data
 
+import com.pnc.androidproject.features.orders.data.local.LineItemEntity
+import com.pnc.androidproject.features.orders.data.local.OrderEntity
+import com.pnc.androidproject.features.orders.data.local.OrderWithLineItems
 import com.pnc.androidproject.features.orders.domain.LineItem
 import com.pnc.androidproject.features.orders.domain.Order
 import java.time.LocalDateTime
@@ -57,4 +60,55 @@ class OrderMapper @Inject constructor(){
             }
         )
     }
+
+    fun mapToEntity(dto: OrderDto): OrderEntity {
+        return OrderEntity(
+            customerId = dto.customerId,
+            firstName = dto.firstName,
+            lastName = dto.lastName,
+            orderDate = dto.orderDate,
+            shipDate = dto.shipDate,
+            orderNumber = dto.orderNumber,
+            status = dto.status,
+            statusName = dto.statusName
+        )
+    }
+
+    fun mapToLineItemEntities(dto: OrderDto): List<LineItemEntity> {
+        return dto.lineItems.mapIndexed { index, item ->
+            LineItemEntity(
+                orderNumber = dto.orderNumber,
+                lineItemIndex = index,
+                productName = item.productName,
+                orderQty = item.orderQty,
+                unitPrice = item.unitPrice,
+                lineTotal = item.lineTotal
+            )
+        }
+    }
+
+    fun mapToDomain(entity: OrderWithLineItems): Order {
+        val dto = OrderDto(
+            customerId = entity.order.customerId,
+            firstName = entity.order.firstName,
+            lastName = entity.order.lastName,
+            orderDate = entity.order.orderDate,
+            shipDate = entity.order.shipDate,
+            orderNumber = entity.order.orderNumber,
+            status = entity.order.status,
+            statusName = entity.order.statusName,
+            lineItems = entity.lineItems.map { item ->
+                LineItemDto(
+                    productName = item.productName,
+                    orderQty = item.orderQty,
+                    unitPrice = item.unitPrice,
+                    lineTotal = item.lineTotal
+                )
+            }
+        )
+
+        return mapToDomain(dto)
+    }
+
+
 }

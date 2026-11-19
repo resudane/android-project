@@ -23,6 +23,8 @@ fun ProductListScreen(
 
     ProductList(
         products = uiState.displayedProducts,
+        isLoading = uiState.isLoading,
+        errorMessage = uiState.errorMessage,
         showFavoritesOnly = uiState.showFavoritesOnly,
         showHistoryOnly = uiState.showHistoryOnly,
         favoriteIds = uiState.favoriteIds,
@@ -38,6 +40,7 @@ fun ProductListScreen(
             viewModel.setShowHistoryOnly(showHistory)
         },
         onClearHistory = viewModel::clearHistory,
-        innerPadding = PaddingValues(0.dp)
+        innerPadding = PaddingValues(0.dp),
+        refreshProducts = { viewModel.loadProducts(forceRefresh = true) }
     )
 }

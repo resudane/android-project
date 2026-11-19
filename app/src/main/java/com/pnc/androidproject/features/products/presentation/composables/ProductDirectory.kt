@@ -16,14 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Filter
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,8 +27,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.pnc.androidproject.features.products.presentation.state.ProductDirectoryState
 
@@ -45,8 +39,9 @@ fun ProductDirectory(
     onBack: () -> Unit = {},
     onProductSelected: (Int) -> Unit = {},
     onShowFilterChange: (Boolean) -> Unit = {},
-    onClearHistory: () -> Unit = {}
-//    useTwoPaneLayout: Boolean = false
+    onClearHistory: () -> Unit = {},
+    onRetry: () -> Unit = {},
+    onRefresh: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -66,7 +61,7 @@ fun ProductDirectory(
                 )
 
                 Text(
-                    text = "Displaying artists",
+                    text = "Displaying products",
                     modifier = Modifier.padding(0.dp, 12.dp)
                 )
             }
@@ -94,6 +89,8 @@ fun ProductDirectory(
                 Box(modifier = Modifier.weight(1f)) {
                     ProductList(
                         products = state.displayedProducts,
+                        isLoading = state.isLoading,
+                        errorMessage = state.errorMessage,
                         showFavoritesOnly = state.showFavoritesOnly,
                         showHistoryOnly = state.showHistoryOnly,
                         favoriteIds = state.favoriteIds,
@@ -103,7 +100,8 @@ fun ProductDirectory(
                         onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                         onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
                         onClearHistory = { onClearHistory() },
-                        innerPadding = PaddingValues(0.dp)
+                        innerPadding = PaddingValues(0.dp),
+                        refreshProducts = onRefresh
                     )
                 }
                 VerticalDivider()
@@ -111,7 +109,7 @@ fun ProductDirectory(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Artists selected")
+                    Text("Products selected")
 
                     val selectedProduct = state.chosenProduct
                     AnimatedVisibility(
@@ -130,6 +128,8 @@ fun ProductDirectory(
         } else {
             ProductList(
                 products = state.displayedProducts,
+                isLoading = state.isLoading,
+                errorMessage = state.errorMessage,
                 showFavoritesOnly = state.showFavoritesOnly,
                 showHistoryOnly = state.showHistoryOnly,
                 favoriteIds = state.favoriteIds,
@@ -139,60 +139,9 @@ fun ProductDirectory(
                 onSetShowFavoritesOnly = { show -> onShowFilterChange(show) },
                 onSetShowHistoryOnly = { show -> onShowFilterChange(show)},
                 onClearHistory = { onClearHistory() },
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                refreshProducts = onRefresh
             )
         }
-
-
-//        if (state.showFilter) {
-//            ModalBottomSheet(
-//                onDismissRequest = {
-//                    onShowFilterChange(false)
-//                }
-//            ) {
-//                Column(
-//                    modifier = Modifier.padding(16.dp),
-//                    verticalArrangement = Arrangement.spacedBy(12.dp)
-//                ) {
-//                    Text(
-//                        text = stringResource(R.string.artists_filter_title),
-//                        style = MaterialTheme.typography.titleSmall
-//                    )
-//                    TextFilter(
-//                        label = stringResource(R.string.artists_genre_label),
-//                        filter = state.genreFilter,
-//                        onFilterChange = onGenreChange
-//                    )
-//                    TextFilter(
-//                        label = stringResource(R.string.artists_location_label),
-//                        filter = state.locationFilter,
-//                        onFilterChange = onLocationChange
-//                    )
-//                    Row(
-//                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//                    ) {
-//                        Button(
-//                            onClick = {
-//                                onGenreChange("")
-//                                onLocationChange("")
-//                            },
-//                            colors = ButtonDefaults.buttonColors(
-//                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-//                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-//                            )
-//                        ) {
-//                            Text(stringResource(R.string.common_clear))
-//                        }
-//                        Button(
-//                            onClick = {
-//                                onShowFilterChange(false)
-//                            }
-//                        ) {
-//                            Text(stringResource(R.string.common_close))
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 }

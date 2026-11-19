@@ -15,7 +15,7 @@ class GetAvailableProductsUseCase @Inject constructor(
             .observeProducts()
             .map { products ->
                 products
-                    .filter { it.quantity >= 0 }
+                    .filter { it.stockLevel >= 0 }
                     .sortedBy { it.name }
             }
     }

@@ -14,22 +14,7 @@ object ProductMapper {
             warranty = dto.warranty ?: "",
             color = dto.color ?: "",
             listPrice = dto.listPrice ?: 0.0,
-            quantity = dto.quantity ?: 0
-        )
-    }
-
-    fun mapToDto(domain: Product): ProductDto {
-        return ProductDto(
-            productId = domain.productId,
-            name = domain.name ?: "",
-            productNumber = domain.productNumber ?: "",
-            summary = domain.summary ?: "",
-            thumbnailPhoto = domain.thumbnailPhoto ?: "",
-            thumbnailPhotoFileName = domain.thumbnailPhotoFileName ?: "",
-            warranty = domain.warranty ?: "",
-            color = domain.color ?: "",
-            listPrice = domain.listPrice ?: 0.0,
-            quantity = domain.quantity ?: 0
+            stockLevel = dto.stockLevel ?: 0
         )
     }
 }

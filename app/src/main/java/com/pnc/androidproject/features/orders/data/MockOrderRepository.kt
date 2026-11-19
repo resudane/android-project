@@ -3,6 +3,10 @@ package com.pnc.androidproject.features.orders.data
 import com.pnc.androidproject.features.orders.domain.LineItem
 import com.pnc.androidproject.features.orders.domain.Order
 import com.pnc.androidproject.features.orders.domain.OrderRepository
+import com.pnc.androidproject.features.products.data.ProductMapper
+import com.pnc.androidproject.features.products.domain.Product
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
 
 class MockOrderRepository: OrderRepository {
@@ -47,5 +51,8 @@ class MockOrderRepository: OrderRepository {
                 items = emptyList()
             )
         )
+    }
+    override suspend fun refreshOrders(): List<Order> {
+        return getOrders()
     }
 }

@@ -1,47 +1,77 @@
 package com.pnc.androidproject.features.products.presentation.composables
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column // Added for vertical arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState // Added for state observation
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pnc.androidproject.features.products.domain.Product
-import com.pnc.androidproject.features.products.presentation.composables.ProductCard
-import com.pnc.androidproject.features.products.presentation.viewmodels.ProductDirectoryViewModel
 import kotlinx.coroutines.launch
 
+enum class SortOption(val label: String) {
+    NameAZ("Name: A to Z"),
+    NameZA("Name: Z to A"),
+    PriceLowHigh("Price: low to high"),
+    PriceHighLow("Price: high to low"),
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductList(
     products: List<Product>,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
     showFavoritesOnly: Boolean,
     showHistoryOnly: Boolean,
     favoriteIds: Set<Int>,
@@ -51,9 +81,15 @@ fun ProductList(
     onSetShowFavoritesOnly: (Boolean) -> Unit,
     onSetShowHistoryOnly: (Boolean) -> Unit,
     onClearHistory: () -> Unit,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    refreshProducts: () -> Unit
 ) {
     val listState = rememberLazyListState()
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var sortOption by rememberSaveable { mutableStateOf(SortOption.NameAZ) }
+    var inStockOnly by rememberSaveable { mutableStateOf(false) }
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
     val showScrollToTop by remember {
@@ -62,89 +98,368 @@ fun ProductList(
         }
     }
 
-    val displayedProducts = remember(products, showHistoryOnly, showFavoritesOnly, recentIds, favoriteIds) {
-        when {
-            showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
-            showFavoritesOnly -> products.filter { it.productId in favoriteIds }
-            else -> products
+    val displayedProducts =
+        remember(
+            products,
+            showHistoryOnly,
+            showFavoritesOnly,
+            recentIds,
+            favoriteIds,
+            searchQuery,
+            sortOption,
+            inStockOnly
+        ) {
+            val visibleProducts = when {
+                showHistoryOnly -> recentIds.mapNotNull { id -> products.find { it.productId == id } }
+                showFavoritesOnly -> products.filter { it.productId in favoriteIds }
+                else -> products
+            }
+
+            val searchedProducts = if (searchQuery.isBlank()) {
+                visibleProducts
+            } else {
+                visibleProducts.filter {
+                    it.name.contains(searchQuery, ignoreCase = true)
+                            || it.productNumber.contains(searchQuery, ignoreCase = true)
+                }
+            }
+
+            val inStock = if (inStockOnly) {
+                searchedProducts.filter { it.stockLevel > 0 }
+            } else {
+                searchedProducts
+            }
+
+            when (sortOption) {
+                SortOption.NameAZ -> inStock.sortedBy { it.name }
+                SortOption.NameZA -> inStock.sortedByDescending { it.name }
+                SortOption.PriceLowHigh -> inStock.sortedBy { it.listPrice }
+                SortOption.PriceHighLow -> inStock.sortedByDescending { it.listPrice }
+            }
         }
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
+            .padding(innerPadding),
+        contentAlignment = Alignment.TopStart
     ) {
 
-        Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (errorMessage != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.width(2.dp))
+                        Button(
+                            onClick = refreshProducts,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.onErrorContainer,
+                                contentColor = MaterialTheme.colorScheme.errorContainer
+                            ),
+
+                            content = { Text("Retry") }
+                        )
+                    }
+                }
+            }
+            DockedSearchBar(
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = { focusManager.clearFocus() },
+                        expanded = false,
+                        onExpandedChange = {},
+                        placeholder = { Text("Search") },
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            searchQuery = ""
+                                            focusManager.clearFocus()
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Clear,
+                                            contentDescription = "Close"
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            focusManager.clearFocus()
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Search,
+                                            contentDescription = "Close"
+                                        )
+                                    }
+                                }
+                            }
+                            if (searchQuery.isEmpty()) {
+                                IconButton(
+                                    onClick = {
+                                        scope.launch {
+                                            listState.animateScrollToItem(0)
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Search,
+                                        contentDescription = "Search"
+                                    )
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                expanded = false,
+                onExpandedChange = {},
+                modifier = Modifier.fillMaxWidth()
+            ) { }
             Row(
-                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilterChip(
-                    selected = showFavoritesOnly,
-                    onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
-                    label = { Text("Saved") },
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
-                )
-                FilterChip(
-                    selected = showHistoryOnly,
-                    onClick = { onSetShowHistoryOnly(!showHistoryOnly) },
-                    label = { Text("History") },
-                    modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                )
-                if (showHistoryOnly && recentIds.isNotEmpty()) {
-                    TextButton(onClick = onClearHistory) { Text("Clear") }
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FilterChip(
+                        selected = showFavoritesOnly,
+                        onClick = { onSetShowFavoritesOnly(!showFavoritesOnly) },
+                        label = { Text("Saved") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                    FilterChip(
+                        selected = showHistoryOnly,
+                        onClick = { onSetShowHistoryOnly(!showHistoryOnly) },
+                        label = { Text("History") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                    if (showHistoryOnly && recentIds.isNotEmpty()) {
+                        TextButton(onClick = onClearHistory) { Text("Clear") }
+                    }
+                }
+
+                SmallFloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = if (showScrollToTop) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    contentColor = if (showScrollToTop) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                ) {
+                    Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
+                }
+
+                IconButton(
+                    onClick = {
+                        showFilterSheet = true
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Icon(Icons.Filled.FilterList, contentDescription = "Filter")
                 }
             }
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize().padding(8.dp)
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    items(
-                        items = displayedProducts,
-                        key = { it.productId }
-                    ) { product ->
-                        ProductCard(
-                            product = product,
-                            isFavorite = product.productId in favoriteIds, // Checking standard property
-                            onFavoriteChange = { isFav ->
-                                onToggleFavorite(
-                                    product.productId,
-                                    isFav
+
+                    if (displayedProducts.isEmpty()) {
+                        if (!isLoading) {
+                            Text(
+                                text = "No products available",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                        ) {
+                            items(
+                                items = displayedProducts,
+                                key = { it.productId }
+                            ) { product ->
+                                ProductCard(
+                                    product = product,
+                                    isFavorite = product.productId in favoriteIds,
+                                    onFavoriteChange = { isFav ->
+                                        onToggleFavorite(
+                                            product.productId,
+                                            isFav
+                                        )
+                                    },
+                                    onClick = { onProductSelected(product.productId) }
                                 )
-                            },
-                            onClick = { onProductSelected(product.productId) }
+                            }
+                        }
+                    }
+
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
                 }
-            }
-        }
 
-        AnimatedVisibility(
-            visible = showScrollToTop,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-        ) {
-            SmallFloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        listState.animateScrollToItem(0)
+                if (showFilterSheet) {
+                    var pendingSort by rememberSaveable { mutableStateOf(sortOption) }
+                    var pendingInStock by rememberSaveable { mutableStateOf(inStockOnly) }
+
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showFilterSheet = false
+                        },
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Sorting by",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            SortOption.entries.forEach { option ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .selectable(
+                                            selected = pendingSort == option,
+                                            onClick = { pendingSort = option },
+                                            role = Role.RadioButton
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = pendingSort == option,
+                                        onClick = null
+                                    )
+                                    Text(
+                                        text = option.label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(start = 8.dp)
+                                    )
+                                }
+                            }
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Show only in stock",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Checkbox(
+                                    checked = pendingInStock,
+                                    onCheckedChange = { pendingInStock = it }
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        showFilterSheet = false
+                                    }
+                                ) {
+                                    Text("Cancel")
+                                }
+                                TextButton(
+                                    onClick = {
+                                        sortOption = pendingSort
+                                        inStockOnly = pendingInStock
+                                        showFilterSheet = false
+                                    }
+                                ) {
+                                    Text("Apply")
+                                }
+                            }
+                        }
                     }
                 }
-            ) {
-                Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Go up")
             }
         }
-
     }
 }

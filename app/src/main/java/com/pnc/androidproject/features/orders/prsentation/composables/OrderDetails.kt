@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.style.TextAlign
+import java.time.format.DateTimeFormatter
 
 //@OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +43,8 @@ fun OrderDetails(
     val order = viewModel.order
     val isLoading = viewModel.isLoading
     val error = viewModel.errorMessage
+    val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+    val orderTotal = viewModel.orderTotal
 
     LaunchedEffect(orderId) {
         viewModel.loadOrder(orderId)
@@ -121,9 +124,10 @@ fun OrderDetails(
 
 
                             Text("Customer: ${order.firstName} ${order.lastName}")
-                            Text("Order Date: ${order.orderDate}")
-                            Text("Ship Date: ${order.shipDate}")
+                            Text("Order Date: ${order.orderDate.format(formatter)}")
+                            Text("Ship Date: ${order.shipDate.format(formatter)}")
                             Text("Status: ${order.statusName ?: "Unknown Status"}")
+                            Text("Order Total: $${"%.2f".format(orderTotal)}")
                         }
                     }
                 }
@@ -149,8 +153,8 @@ fun OrderDetails(
                             )
 
                             Text("Quantity: ${item.orderQty}")
-                            Text("Unit Price: $${item.unitPrice}")
-                            Text("Line Total: $${item.lineTotal}")
+                            Text("Unit Price: $${"%.2f".format(item.unitPrice)}")
+                            Text("Line Total: $${"%.2f".format(item.lineTotal)}")
                         }
                     }
                 }

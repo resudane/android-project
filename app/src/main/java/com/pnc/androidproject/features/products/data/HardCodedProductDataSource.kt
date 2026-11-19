@@ -17,7 +17,7 @@ class HardCodedProductDataSource @Inject constructor(): ProductDataSource {
                 warranty = "1 year",
                 color = "Red",
                 listPrice = 100.0,
-                quantity = 10
+                stockLevel = 10
             )
         )
     }

@@ -49,6 +49,7 @@ class ProductDirectoryViewModel @Inject constructor(
                 _uiState.update { it.copy(recentIds = ids) }
             }
         }
+        loadProducts()
     }
 
     fun toggleFavorite(productId: Int, favorite: Boolean) {
@@ -69,44 +70,46 @@ class ProductDirectoryViewModel @Inject constructor(
         viewModelScope.launch { recentRepository.clearHistory() }
     }
 
-    fun loadProducts() {
+    fun loadProducts(forceRefresh: Boolean = false) {
         if (_uiState.value.isLoading) return
 
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isLoading = true,
-                    errorMessage = null
-                )
+            if (_uiState.value.products.isEmpty() || forceRefresh) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+                }
             }
 
             try {
                 refreshProducts()
-                _uiState.update { it.copy(isLoading = false) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: "Couldn't reload artists"
+                        errorMessage = null
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val userMsg = when (e) {
+                    is java.net.UnknownHostException,
+                    is java.net.ConnectException,
+                    is java.net.SocketTimeoutException,
+                    is java.io.IOException -> "Couldn't connect. Please check your network connection and try again."
+                    else -> e.message ?: "Unable to load products due to a network error."
+                }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = userMsg
                     )
                 }
             }
         }
     }
-
-    fun dismissError() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-//    fun updateShowFilter(show: Boolean) {
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                showFilter = show
-//            )
-//        }
-//    }
 
     fun setSelectedProduct(productId: Int) {
         _uiState.update { currentState ->
