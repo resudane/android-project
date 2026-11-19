@@ -113,7 +113,7 @@ fun OrdersList(
                     expanded = false,
                     onExpandedChange = {},
                     placeholder = {
-                        Text("Search")
+                        Text("Search Order Number")
                     },
                     leadingIcon = {
                         Icon(
