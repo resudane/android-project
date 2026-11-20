@@ -1,7 +1,6 @@
 package com.pnc.androidproject.features.products.presentation.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnc.androidproject.features.products.data.FavoritesRepository
@@ -23,8 +22,7 @@ class ProductDirectoryViewModel @Inject constructor(
     private val getAvailableProducts: GetAvailableProductsUseCase,
     private val refreshProducts: RefreshProductsUseCase,
     private val favoritesRepository: FavoritesRepository,
-    private val recentRepository: RecentlyViewedRepository,
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val recentRepository: RecentlyViewedRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(
         ProductDirectoryState()
@@ -110,13 +108,4 @@ class ProductDirectoryViewModel @Inject constructor(
             }
         }
     }
-
-    fun setSelectedProduct(productId: Int) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                chosenProductId = productId
-            )
-        }
-    }
-
 }

@@ -35,8 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DockedSearchBar
@@ -47,7 +47,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalFocusManager
+import kotlinx.coroutines.launch
 
 enum class OrderSortOption(val label: String) {
     NewestFirst("Newest First"),
@@ -64,6 +66,8 @@ fun OrdersList(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     var sortOption by rememberSaveable {
         mutableStateOf(OrderSortOption.NewestFirst)
@@ -115,22 +119,50 @@ fun OrdersList(
                     placeholder = {
                         Text("Search Order Number")
                     },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    },
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        searchQuery = ""
+                                        focusManager.clearFocus()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Clear,
+                                        contentDescription = "Close"
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        focusManager.clearFocus()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Search,
+                                        contentDescription = "Close"
+                                    )
+                                }
+                            }
+                        }
+                        if (searchQuery.isEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        listState.animateScrollToItem(0)
+                                    }
+                                }
+                            ) {
                                 Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "Clear search"
+                                    imageVector = Icons.Filled.Search,
+                                    contentDescription = "Search"
                                 )
                             }
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             },
             expanded = false,

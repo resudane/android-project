@@ -193,8 +193,7 @@ fun ProductList(
                         onSearch = { focusManager.clearFocus() },
                         expanded = false,
                         onExpandedChange = {},
-                        placeholder = { Text("Search") },
-                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                        placeholder = { Text("Search Products") },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 Row(
