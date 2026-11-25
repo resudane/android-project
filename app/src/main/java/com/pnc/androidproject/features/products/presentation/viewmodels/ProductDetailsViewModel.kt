@@ -60,8 +60,14 @@ class ProductDetailsViewModel @Inject constructor(
                 }
                 catch(e: Exception) {
                     if (!hadCache) {
-                        _uiState.value =
-                            LoadableState.Error(e.message ?: "Failed to load product")
+                        val userMsg = when (e) {
+                            is java.net.UnknownHostException,
+                            is java.net.ConnectException,
+                            is java.net.SocketTimeoutException,
+                            is java.io.IOException -> "Couldn't connect. Please check your network connection and try again."
+                            else -> e.message ?: "Failed to load product"
+                        }
+                        _uiState.value = LoadableState.Error(userMsg)
                     }
                 }
             }
